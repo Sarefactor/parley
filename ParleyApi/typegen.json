@@ -1,0 +1,4 @@
+{
+  "assemblies": [ "bin/Debug/net10.0/Parley.dll" ],
+  "outputPath": "bin/Debug/net10.0/parleyts"
+}

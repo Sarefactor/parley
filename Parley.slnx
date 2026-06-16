@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Parley/Parley.csproj" />
+  <Project Path="ParleyApi/ParleyApi.csproj" />
+  <Project Path="ParleyDevTools/ParleyDevTools.csproj" />
+</Solution>

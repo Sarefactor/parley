@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>6786bb1e-75ad-4291-a897-b9518481b0a9</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Agents.AI" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Agents.AI.AGUI" Version="1.7.0-preview.260526.1" />
+    <PackageReference Include="Microsoft.Agents.AI.Hosting.AGUI.AspNetCore" Version="1.7.0-preview.260526.1" />
+    <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.6.0" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.6.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.8" />
+    <PackageReference Include="MongoDB.Bson" Version="3.9.0" />
+    <PackageReference Include="MongoDB.Driver" Version="3.9.0" />
+    <PackageReference Include="TypeGen" Version="7.0.0" />
+  </ItemGroup>
+
+</Project>
