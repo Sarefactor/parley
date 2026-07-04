@@ -6,7 +6,7 @@ namespace Parley.Core.DataAccess.Models.Schemas;
 
 public class AgentConfiguration
 {
-    public static readonly string DefaultConfigurationId = "waterworksBot:configuration";
+    public static readonly string DefaultConfigurationId = "parley:configuration";
 
     public AgentConfiguration() {}
 

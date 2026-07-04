@@ -13,7 +13,7 @@ public class ClassificationNodeOptionsValidator : ParleyNodeOptionsValidator
 
     public override bool Validate(Guid workflowId, NodeConfigDto dto, IReadOnlyCollection<WorkflowVariableDto> workflowVariables, ParleyValidationContext context)
     {
-        var hasErrors = false;
+        var isValid = true;
 
         if (!TrySerialiseOptions<ClassificationNodeOptions>(dto.NodeOptions, out var options)
             || options == null)
@@ -37,9 +37,9 @@ public class ClassificationNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
-        return hasErrors;
+        return isValid;
     }
 }

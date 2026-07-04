@@ -15,7 +15,7 @@ public class ConfirmationNodeOptionsValidator : ParleyNodeOptionsValidator
                                   IReadOnlyCollection<WorkflowVariableDto> workflowVariables,
                                   ParleyValidationContext context)
     {
-        var hasErrors = false;
+        var isValid = true;
 
         if (!TrySerialiseOptions<ConfirmationNodeOptions>(dto.NodeOptions, out var options)
             || options == null)
@@ -39,7 +39,7 @@ public class ConfirmationNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
         if (string.IsNullOrWhiteSpace(options.Message))
@@ -50,9 +50,9 @@ public class ConfirmationNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
-        return hasErrors;
+        return isValid;
     }
 }

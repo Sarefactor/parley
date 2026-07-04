@@ -43,6 +43,8 @@ public class SchemaFactory : ISchemaFactory
             throw new ParleyValidationException(context.MapValidationDto());
         }
 
+        var test = agentSchema.WorkflowSchemas.SelectMany(x => x.Nodes.Values).Where(x => x.Options.ValueKind == System.Text.Json.JsonValueKind.Undefined).ToList();
+
         _agentSchemaRepository.Upsert(agentSchema);
     }
 

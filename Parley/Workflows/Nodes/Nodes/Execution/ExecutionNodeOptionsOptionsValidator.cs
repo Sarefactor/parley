@@ -12,7 +12,7 @@ public class ExecutionNodeOptionsOptionsValidator : ParleyNodeOptionsValidator
 
     public override bool Validate(Guid workflowId, NodeConfigDto dto, IReadOnlyCollection<WorkflowVariableDto> workflowVariables, ParleyValidationContext context)
     {
-        var hasErrors = false;
+        var isValid = true;
 
         if (!TrySerialiseOptions<ExecutionNodeOptions>(dto.NodeOptions, out var options)
             || options == null)
@@ -26,6 +26,6 @@ public class ExecutionNodeOptionsOptionsValidator : ParleyNodeOptionsValidator
             return false;
         }
 
-        return hasErrors;
+        return isValid;
     }
 }

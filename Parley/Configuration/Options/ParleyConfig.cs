@@ -8,11 +8,11 @@ public class ParleyConfig
 
     public AgentProviderType AgentProvider { get; set; } = 0;
 
-    public OpenAiConfig OpenAiConfig { get; set; } = new();
+    public ProviderConfig ProviderConfig { get; set; } = new();
     public ParleyDatabases Databases { get; set; } = new();
 }
 
-public class OpenAiConfig
+public class ProviderConfig
 {
     public string ApiKey { get; set; } = default!;
     public string Model { get; set; } = default!;

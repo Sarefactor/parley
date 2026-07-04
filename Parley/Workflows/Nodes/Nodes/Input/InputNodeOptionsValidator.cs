@@ -12,7 +12,7 @@ public class InputNodeOptionsValidator : ParleyNodeOptionsValidator
 
     public override bool Validate(Guid workflowId, NodeConfigDto dto, IReadOnlyCollection<WorkflowVariableDto> workflowVariables, ParleyValidationContext context)
     {
-        var hasErrors = false;
+        var isValid = true;
 
         if (!TrySerialiseOptions<InputNodeOptions>(dto.NodeOptions, out var options)
             || options == null)
@@ -34,7 +34,7 @@ public class InputNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
         var targetVariable = GetParleyVariableDto(options.TargetKey, workflowVariables);
@@ -47,7 +47,7 @@ public class InputNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
         if (targetVariable != null
@@ -60,7 +60,7 @@ public class InputNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            return true;
+            return false;
         }
 
         if (targetVariable != null)
@@ -79,9 +79,9 @@ public class InputNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
-        return hasErrors;
+        return isValid;
     }
 }

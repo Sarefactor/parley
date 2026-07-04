@@ -12,7 +12,7 @@ public class HttpRequestNodeOptionsValidator : ParleyNodeOptionsValidator
 
     public override bool Validate(Guid workflowId, NodeConfigDto dto, IReadOnlyCollection<WorkflowVariableDto> workflowVariables, ParleyValidationContext context)
     {
-        var hasErrors = false;
+        var isValid = true;
 
         if (!TrySerialiseOptions<HttpRequestNodeOptions>(dto.NodeOptions, out var options)
             || options == null)
@@ -33,6 +33,8 @@ public class HttpRequestNodeOptionsValidator : ParleyNodeOptionsValidator
                                  $"Invalid value for {nameof(HttpRequestNodeOptions)} property {nameof(options.Url)}.",
                                  WorkflowErrorType.Config,
                                  false);
+
+            isValid = false;
         }
 
         if (!Enum.IsDefined(options.MethodType))
@@ -42,6 +44,8 @@ public class HttpRequestNodeOptionsValidator : ParleyNodeOptionsValidator
                                  $"Invalid value for {nameof(HttpRequestNodeOptions)} property {nameof(options.MethodType)}. Value not defined.",
                                  WorkflowErrorType.Config,
                                  false);
+            
+            isValid = false;
         }
 
         if (string.IsNullOrWhiteSpace(options.ContentType))
@@ -51,8 +55,10 @@ public class HttpRequestNodeOptionsValidator : ParleyNodeOptionsValidator
                                  $"Invalid value for {nameof(HttpRequestNodeOptions)} property {nameof(options.ContentType)}.",
                                  WorkflowErrorType.Config,
                                  false);
+            
+            isValid = false;
         }
         
-        return hasErrors;
+        return isValid;
     }
 }

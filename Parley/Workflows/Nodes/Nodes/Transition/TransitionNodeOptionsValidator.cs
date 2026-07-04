@@ -11,7 +11,7 @@ public class TransitionNodeOptionsValidator : ParleyNodeOptionsValidator
 
     public override bool Validate(Guid workflowId, NodeConfigDto dto, IReadOnlyCollection<WorkflowVariableDto> workflowVariables, ParleyValidationContext context)
     {
-        var hasErrors = false;
+        var isValid = true;
 
         if (!TrySerialiseOptions<TransitionNodeOptions>(dto.NodeOptions, out var options)
             || options == null)
@@ -25,6 +25,6 @@ public class TransitionNodeOptionsValidator : ParleyNodeOptionsValidator
             return false;
         }
 
-        return hasErrors;
+        return isValid;
     }
 }

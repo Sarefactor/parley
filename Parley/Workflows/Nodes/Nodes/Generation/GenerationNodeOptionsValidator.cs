@@ -18,7 +18,7 @@ internal class GenerationNodeOptionsValidator : ParleyNodeOptionsValidator
 
     public override bool Validate(Guid workflowId, NodeConfigDto dto, IReadOnlyCollection<WorkflowVariableDto> workflowVariables, ParleyValidationContext context)
     {
-        var hasErrors = false;
+        var isValid = true;
 
         if (!TrySerialiseOptions<GenerationNodeOptions>(dto.NodeOptions, out var options)
             || options == null)
@@ -40,7 +40,7 @@ internal class GenerationNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
         var targetVariable = GetParleyVariableDto(options.TargetKey, workflowVariables);
@@ -53,9 +53,9 @@ internal class GenerationNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
-        return hasErrors;
+        return isValid;
     }
 }

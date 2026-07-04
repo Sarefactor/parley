@@ -15,7 +15,7 @@ public class ChoiceNodeOptionsValidator : ParleyNodeOptionsValidator
                                   IReadOnlyCollection<WorkflowVariableDto> workflowVariables,
                                   ParleyValidationContext context)
     {
-        var hasErrors = false;
+        var isValid = true;
 
         if (!TrySerialiseOptions<ChoiceNodeOptions>(dto.NodeOptions, out var options)
             || options == null)
@@ -37,7 +37,7 @@ public class ChoiceNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
         var targetVariable = GetParleyVariableDto(options.TargetKey, workflowVariables);
@@ -50,7 +50,7 @@ public class ChoiceNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
         if (string.IsNullOrWhiteSpace(options.ErrorMessage))
@@ -61,7 +61,7 @@ public class ChoiceNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
         if (options.Choices.Count < 2)
@@ -72,7 +72,7 @@ public class ChoiceNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
         if (!Enum.IsDefined(options.ValidationType))
@@ -83,9 +83,9 @@ public class ChoiceNodeOptionsValidator : ParleyNodeOptionsValidator
                                  WorkflowErrorType.Config,
                                  false);
 
-            hasErrors = true;
+            isValid = false;
         }
 
-        return hasErrors;
+        return isValid;
     }
 }
