@@ -28,5 +28,6 @@ public class ParleyMongoDb
     public string ConnectionString { get; set; } = string.Empty;
     public string Database { get; set; } = string.Empty;
     public string AgentSchemaCollection { get; set; } = string.Empty;
+    public string WorkflowSchemaCollection { get; set; } = string.Empty;
     public string ConfigurationCollection { get; set; } = string.Empty;
 }

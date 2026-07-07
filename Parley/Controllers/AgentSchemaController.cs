@@ -10,26 +10,26 @@ using Parley.Providers;
 
 namespace Parley.Controllers;
 
-[Route("api/parley")]
+[Route("api/parley/agentschemas")]
 [ApiController]
-public class ParleyController : ControllerBase
+public class AgentSchemaController : ControllerBase
 {
     private readonly ISchemaFactory _schemaFactory;
     private readonly IAgentSchemaRegistry _agentSchemaRegistry;
-    private readonly ISchemaProvider _schemaProvider;
+    private readonly IAgentSchemaProvider _schemaProvider;
 
-    public ParleyController(ISchemaFactory schemaFactory,
-                            IAgentSchemaRegistry agentSchemaRegistry,
-                            ISchemaProvider schemaProvider)
+    public AgentSchemaController(ISchemaFactory schemaFactory,
+                                 IAgentSchemaRegistry agentSchemaRegistry,
+                                 IAgentSchemaProvider agentSchemaProvider)
     {
         _schemaFactory = schemaFactory;
         _agentSchemaRegistry = agentSchemaRegistry;
-        _schemaProvider = schemaProvider;
+        _schemaProvider = agentSchemaProvider;
     }
 
     [HttpGet]
     [Route("search")]
-    [ProducesResponseType(typeof(SearchResultDto<AgentSchemaSearchItemDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SearchResultDto<SchemaSearchItemDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search([FromQuery] int skip, [FromQuery] int take)
     {
         var result = await _agentSchemaRegistry.Search(skip, take);

@@ -5,13 +5,12 @@ using Parley.Core.DataAccess.Models.Schemas;
 
 namespace Parley.Core.DataAccess.Repositories;
 
-public class MongoDbAgentSchemaRepository : IAgentSchemaRepository
+public class AgentSchemaRepository : IAgentSchemaRepository
 {
+    private IMongoCollection<AgentSchema>? _collection;
     private readonly ParleyConfig _config;
 
-    private IMongoCollection<AgentSchema>? _collection;
-
-    public MongoDbAgentSchemaRepository(IOptionsMonitor<ParleyConfig> config)
+    public AgentSchemaRepository(IOptionsMonitor<ParleyConfig> config)
     {
         _config = config.CurrentValue;
     }
@@ -68,8 +67,8 @@ public class MongoDbAgentSchemaRepository : IAgentSchemaRepository
                                 agentSchema,
                                 new ReplaceOptions { IsUpsert = true });
     }
-    
-    public void EnsureCollectionExists()
+
+    private void EnsureCollectionExists()
     {
         if (_collection != null)
             return;

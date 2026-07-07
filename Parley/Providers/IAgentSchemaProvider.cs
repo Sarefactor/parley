@@ -2,7 +2,7 @@
 
 namespace Parley.Providers;
 
-public interface ISchemaProvider
+public interface IAgentSchemaProvider
 {
     Task<AgentSchema> Provide();
 

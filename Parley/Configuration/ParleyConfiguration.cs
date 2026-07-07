@@ -41,7 +41,8 @@ public static class ParleyConfiguration
 
         services.AddSingleton<IAgentProvider, AgentProvider>();
         services.AddSingleton<ISessionProvider, SessionProvider>();
-        services.AddSingleton<ISchemaProvider, SchemaProvider>();
+        services.AddSingleton<IAgentSchemaProvider, AgentSchemaProvider>();
+        services.AddSingleton<IWorkflowSchemaProvider, WorkflowSchemaProvider>();
         services.AddSingleton<IChatClientProvider, ChatClientProvider>();
         services.AddSingleton<IParleyNodeFactory, ParleyNodeFactory>();
         services.AddSingleton<IValidateInput, InputValidator>();
@@ -49,7 +50,8 @@ public static class ParleyConfiguration
         services.AddSingleton<IWorkflowClassifier, WorkflowClassifier>();
         services.AddSingleton<ISchemaFactory, SchemaFactory>();
         services.AddSingleton<IAgentSchemaRegistry, AgentSchemaRegistry>();
-        services.AddSingleton<IAgentSchemaDtoMapper, AgentSchemaDtoMapper>();
+        services.AddSingleton<IWorkflowSchemaRegistry, WorkflowSchemaRegistry>();
+        services.AddSingleton<ISchemaDtoMapper, AgentSchemaDtoMapper>();
 
         services.AddMemoryCache();
     }
@@ -63,8 +65,9 @@ public static class ParleyConfiguration
     {
         if (useDefaultMongoDb)
         { 
-            services.AddSingleton<IAgentSchemaRepository, MongoDbAgentSchemaRepository>();
-            services.AddSingleton<IAgentConfigurationRepository, MongoDbAgentConfigurationRepository>();
+            services.AddSingleton<IAgentSchemaRepository, AgentSchemaRepository>();
+            services.AddSingleton<IWorkflowSchemaRepository, WorkflowSchemaRepository>();
+            services.AddSingleton<IAgentConfigurationRepository, AgentConfigurationRepository>();
             ParleyNodeOptionsSerialiser.ConfigureMongoDbSerialisation();
         }
     }

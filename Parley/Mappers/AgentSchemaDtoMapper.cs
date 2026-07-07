@@ -6,12 +6,13 @@ using Parley.Dtos.Schema;
 
 namespace Parley.Mappers;
 
-public interface IAgentSchemaDtoMapper
+public interface ISchemaDtoMapper
 {
     AgentSchemaDto Map(AgentSchema agentSchema);
+    WorkflowSchemaDto Map(WorkflowSchema workflowSchema);
 }
 
-public class AgentSchemaDtoMapper : IAgentSchemaDtoMapper
+public class AgentSchemaDtoMapper : ISchemaDtoMapper
 {
     public AgentSchemaDto Map(AgentSchema agentSchema)
     {
@@ -23,6 +24,11 @@ public class AgentSchemaDtoMapper : IAgentSchemaDtoMapper
             WorkflowSchemas = agentSchema.WorkflowSchemas.Select(MapWorkflowSchemaDto)
                                                          .ToList()
         };
+    }
+
+    public WorkflowSchemaDto Map(WorkflowSchema workflowSchema)
+    {
+        return MapWorkflowSchemaDto(workflowSchema);
     }
 
     private static WorkflowSchemaDto MapWorkflowSchemaDto(WorkflowSchema schema)

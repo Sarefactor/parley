@@ -9,9 +9,9 @@ namespace Parley.Workflows.Examples;
 
 public class ProductSearchWorkflow
 {
-    private readonly ISchemaProvider _schemaProvider;
+    private readonly IAgentSchemaProvider _schemaProvider;
 
-    public ProductSearchWorkflow(ISchemaProvider schemaProvider)
+    public ProductSearchWorkflow(IAgentSchemaProvider schemaProvider)
     {
         _schemaProvider = schemaProvider;
     }

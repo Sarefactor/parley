@@ -16,20 +16,18 @@ public class SchemaFactory : ISchemaFactory
 {
     private readonly IParleyNodeFactory _parleyNodeFactory;
     private readonly IAgentSchemaRepository _agentSchemaRepository;
+    private readonly IWorkflowSchemaRepository _workflowSchemaRepository;
 
     public SchemaFactory(IParleyNodeFactory parleyNodeFactory,
-                         IAgentSchemaRepository agentSchemaRepository)
+                         IAgentSchemaRepository agentSchemaRepository,
+                         IWorkflowSchemaRepository workflowSchemaRepository)
     {
         _parleyNodeFactory = parleyNodeFactory;
         _agentSchemaRepository = agentSchemaRepository;
+        _workflowSchemaRepository = workflowSchemaRepository;
     }
 
     public async Task Upsert(AgentSchemaDto agentSchemaDto)
-    {
-        await BuildSchema(agentSchemaDto);
-    }
-
-    public async Task BuildSchema(AgentSchemaDto agentSchemaDto)
     {
         var context = new ParleyValidationContext();
 
@@ -38,14 +36,26 @@ public class SchemaFactory : ISchemaFactory
         var workflows = BuildWorkflowSchemas(agentSchemaDto.WorkflowSchemas, context);
         agentSchema.SetWorkflowSchemas(workflows);
 
-        if(context.HasErrors)
+        if (context.HasErrors)
         {
             throw new ParleyValidationException(context.MapValidationDto());
         }
 
-        var test = agentSchema.WorkflowSchemas.SelectMany(x => x.Nodes.Values).Where(x => x.Options.ValueKind == System.Text.Json.JsonValueKind.Undefined).ToList();
-
         _agentSchemaRepository.Upsert(agentSchema);
+    }
+
+    public async Task Upsert(WorkflowSchemaDto workflowSchemaDto)
+    {
+        var context = new ParleyValidationContext();
+
+        var workflowSchema = BuildWorkflowSchema(workflowSchemaDto, context);
+
+        if (context.HasErrors)
+        {
+            throw new ParleyValidationException(context.MapValidationDto());
+        }
+
+        _workflowSchemaRepository.Upsert(workflowSchema);
     }
 
     private AgentSchema CreateAgentSchema(AgentSchemaDto agentSchemaDto, ParleyValidationContext context)
@@ -60,32 +70,35 @@ public class SchemaFactory : ISchemaFactory
     private List<WorkflowSchema> BuildWorkflowSchemas(List<WorkflowSchemaDto> workflowSchemaDtos,
                                                       ParleyValidationContext context)
     {
-        return workflowSchemaDtos.Select(x =>
-        {
-            WorkflowSchemaValidator.CollectValidationErrors(x,
-                                                            x.ExecutionNodeId,
-                                                            context);
+        return workflowSchemaDtos.Select(x => BuildWorkflowSchema(x, context)).ToList();
+    }
 
-            var workflow = new WorkflowSchema(x.ExecutionNodeId,
-                                              x.Name,
-                                              x.Intent,
-                                              x.Description);
+    private WorkflowSchema BuildWorkflowSchema(WorkflowSchemaDto dto,
+                                               ParleyValidationContext context)
+    {
+        WorkflowSchemaValidator.CollectValidationErrors(dto,
+                                                        dto.ExecutionNodeId,
+                                                        context);
 
-            var workflowVariables = BuildWorkflowVariables(x.WorkflowVariables,
-                                                           x.ExecutionNodeId,
-                                                           null,
-                                                           WorkflowVariableType.Schema,
-                                                           context);
+        var workflow = new WorkflowSchema(dto.ExecutionNodeId,
+                                          dto.Name,
+                                          dto.Intent,
+                                          dto.Description);
 
-            workflow.SetWorkflowVariables(workflowVariables);
+        var workflowVariables = BuildWorkflowVariables(dto.WorkflowVariables,
+                                                       dto.ExecutionNodeId,
+                                                       null,
+                                                       WorkflowVariableType.Schema,
+                                                       context);
 
-            var workflowNodes = BuildWorkflowNodes(x,
-                                                   context);
+        workflow.SetWorkflowVariables(workflowVariables);
 
-            workflow.SetWorkflowNodes(workflowNodes);
+        var workflowNodes = BuildWorkflowNodes(dto,
+                                               context);
 
-            return workflow;
-        }).ToList();
+        workflow.SetWorkflowNodes(workflowNodes);
+
+        return workflow;
     }
 
     public List<WorkflowVariable> BuildWorkflowVariables(List<WorkflowVariableDto> workflowVariableDtos,

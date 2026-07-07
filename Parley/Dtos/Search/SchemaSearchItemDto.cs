@@ -1,6 +1,6 @@
 ﻿namespace Parley.Dtos.Search;
 
-public class AgentSchemaSearchItemDto
+public class SchemaSearchItemDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

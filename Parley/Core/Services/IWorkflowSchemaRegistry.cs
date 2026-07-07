@@ -3,9 +3,9 @@ using Parley.Dtos.Search;
 
 namespace Parley.Core.Services;
 
-public interface IAgentSchemaRegistry
+public interface IWorkflowSchemaRegistry
 {
     Task<SearchResultDto<SchemaSearchItemDto>> Search(int skip, int take);
-    Task<AgentSchemaDto?> Get(Guid id);
+    Task<WorkflowSchemaDto?> Get(Guid id);
     Task Delete(Guid id);
 }

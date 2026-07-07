@@ -10,14 +10,14 @@ namespace Parley.Providers;
 public class AgentProvider : IAgentProvider
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ISchemaProvider _schemaProvider;
+    private readonly IAgentSchemaProvider _schemaProvider;
     private readonly IChatClientProvider _chatClientProvider;
 
     private AIAgent? BaseAgent { get; set; }
     private IChatClient? ChatClient { get; set; }
 
     public AgentProvider(IServiceProvider serviceProvider,
-                         ISchemaProvider schemaProvider,
+                         IAgentSchemaProvider schemaProvider,
                          IChatClientProvider chatClientProvider)
                          
     {

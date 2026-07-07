@@ -4,13 +4,13 @@ using Parley.Core.DataAccess.Repositories;
 
 namespace Parley.Providers;
 
-internal class SchemaProvider : ISchemaProvider
+internal class AgentSchemaProvider : IAgentSchemaProvider
 {
     private readonly IAgentConfigurationRepository _agentConfigurationRepository;
     private readonly IAgentSchemaRepository _agentSchemaRepository;
     private readonly IMemoryCache _memoryCache;
 
-    public SchemaProvider(IAgentConfigurationRepository agentConfigurationRepository,
+    public AgentSchemaProvider(IAgentConfigurationRepository agentConfigurationRepository,
                           IAgentSchemaRepository agentSchemaRepository,
                           IMemoryCache memoryCache)
     {
@@ -21,7 +21,7 @@ internal class SchemaProvider : ISchemaProvider
 
     public async Task<AgentSchema> Provide()
     {
-        return (await _memoryCache.GetOrCreateAsync($"{nameof(SchemaProvider)}:{nameof(AgentSchema)}", async entry => await GetAgentSchema(), GetMemoryCacheOptions()))!;
+        return (await _memoryCache.GetOrCreateAsync($"{nameof(AgentSchemaProvider)}:{nameof(AgentSchema)}", async entry => await GetAgentSchema(), GetMemoryCacheOptions()))!;
     }
 
     private async Task<AgentSchema> GetAgentSchema()
@@ -41,7 +41,7 @@ internal class SchemaProvider : ISchemaProvider
 
     private async Task<AgentConfiguration> GetAgentConfiguration()
     {
-        return (await _memoryCache.GetOrCreateAsync($"{nameof(SchemaProvider)}:{nameof(AgentConfiguration)}", async entry => await GetAgentConfigurationFromDb(), GetMemoryCacheOptions()))!;
+        return (await _memoryCache.GetOrCreateAsync($"{nameof(AgentSchemaProvider)}:{nameof(AgentConfiguration)}", async entry => await GetAgentConfigurationFromDb(), GetMemoryCacheOptions()))!;
     }
 
     private async Task<AgentConfiguration> GetAgentConfigurationFromDb()
@@ -69,6 +69,6 @@ internal class SchemaProvider : ISchemaProvider
             return;
 
         await _agentConfigurationRepository.UpdateActiveConversationId(agentSchemaId);
-        _memoryCache.Set($"{nameof(SchemaProvider)}:{nameof(AgentSchema)}", agentSchema, GetMemoryCacheOptions());
+        _memoryCache.Set($"{nameof(AgentSchemaProvider)}:{nameof(AgentSchema)}", agentSchema, GetMemoryCacheOptions());
     }
 }

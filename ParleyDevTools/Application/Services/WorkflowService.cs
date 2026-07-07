@@ -10,13 +10,16 @@ namespace ParleyDevTools.Application.Services;
 
 public class WorkflowService : IWorkflowService
 {
-    private readonly ISchemaProvider _schemaProvider;
+    private readonly IAgentSchemaProvider _agentSchemaProvider;
+    private readonly IWorkflowSchemaProvider _workflowSchemaProvider;
     private readonly IParleyNodeFactory _parleyNodeFactory;
 
-    public WorkflowService(ISchemaProvider schemaProvider,
+    public WorkflowService(IAgentSchemaProvider schemaProvider,
+                           IWorkflowSchemaProvider workflowSchemaProvider,
                            IParleyNodeFactory parleyNodeFactory)
     {
-        _schemaProvider = schemaProvider;
+        _agentSchemaProvider = schemaProvider;
+        _workflowSchemaProvider = workflowSchemaProvider;
         _parleyNodeFactory = parleyNodeFactory;
     }
 
@@ -24,7 +27,8 @@ public class WorkflowService : IWorkflowService
     {
         try
         {
-            var factory = new TestWorkflowFactory(_schemaProvider,
+            var factory = new TestWorkflowFactory(_agentSchemaProvider,
+                                                  _workflowSchemaProvider,
                                                  _parleyNodeFactory);
 
             foreach (var (workflow, workflowSchema) in factory.BuildWorkflowsFromSchema())

@@ -5,12 +5,12 @@ using Parley.Core.DataAccess.Models.Schemas;
 
 namespace Parley.Core.DataAccess.Repositories;
 
-public class MongoDbAgentConfigurationRepository : IAgentConfigurationRepository
+public class AgentConfigurationRepository : IAgentConfigurationRepository
 {
     private readonly ParleyConfig _config;
     private IMongoCollection<AgentConfiguration>? _collection;
 
-    public MongoDbAgentConfigurationRepository(IOptionsMonitor<ParleyConfig> config)
+    public AgentConfigurationRepository(IOptionsMonitor<ParleyConfig> config)
     {
         _config = config.CurrentValue;
     }
