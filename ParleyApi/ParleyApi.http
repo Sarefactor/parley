@@ -1,6 +1,0 @@
-@ParleyApi_HostAddress = http://localhost:5289
-
-GET {{ParleyApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

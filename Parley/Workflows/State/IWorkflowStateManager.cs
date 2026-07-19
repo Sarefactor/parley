@@ -8,7 +8,7 @@ public interface IWorkflowStateManager
 {
     Task InitialiseWorkflowVariables(IWorkflowContext context,
                                      List<WorkflowVariable> workflowVariables,
-                                     JsonObject extractedVariables,
+                                     JsonObject? extractedVariables,
                                      CancellationToken cancellationToken);
 
     Task<ICollection<WorkflowVariable>> GetWorkflowVariablesFromContext(IWorkflowContext context,
@@ -22,17 +22,26 @@ public interface IWorkflowStateManager
                              WorkflowVariable workflowVariable,
                              CancellationToken cancellationToken);
 
-    Task SetWorkflowVariable(IWorkflowContext context,
-                             string variableKey,
-                             object value,
-                             CancellationToken cancellationToken);
-
-    Task SetWorkflowVariables(IWorkflowContext context,
-                              List<WorkflowVariable> workflowVariables,
-                              CancellationToken cancellationToken);
-
     Task SetWorkflowVariables(IWorkflowContext context,
                               List<string> workflowVariables,
                               JsonObject extractedVariables,
                               CancellationToken cancellationToken);
+
+    Task<IterationContext> GetIterationContext(Guid iteratorKey,
+                                               string targetKey,
+                                               IWorkflowContext context,
+                                               CancellationToken cancellationToken);
+
+    Task<(IterationContext? primaryContext, IterationContext? secondaryContext)> GetWorkflowVariableContexts(string primaryKey,
+                                                                                                             string? secondaryKey,
+                                                                                                             IWorkflowContext context,
+                                                                                                             CancellationToken cancellationToken);
+
+    Task SetIterationContext(IterationContext iterationContext,
+                             IWorkflowContext workflowContext,
+                             CancellationToken cancellationToken);
+
+    Task ClearIterationContext(IterationContext iterationContext,
+                               IWorkflowContext workflowContext,
+                               CancellationToken cancellationToken);
 }

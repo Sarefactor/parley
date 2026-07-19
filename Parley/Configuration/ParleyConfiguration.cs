@@ -12,6 +12,7 @@ using Parley.Providers;
 using Parley.Workflows.Nodes.Factories;
 using Parley.Workflows.State;
 using Parley.Workflows.Validation;
+using System.Reflection;
 
 namespace Parley.Configuration;
 
@@ -72,13 +73,13 @@ public static class ParleyConfiguration
         }
     }
 
-    public static async Task PreloadNodes(WebApplication app)
+    public static async Task PreloadNodes(WebApplication app, params Assembly[] assemblies)
     {
         var parleyNodeFactory = app.Services.GetService<IParleyNodeFactory>();
         parleyNodeFactory?.Preload();
     }
 
-    public static async Task PreloadNodes(IHost host)
+    public static async Task PreloadNodes(IHost host, params Assembly[] assemblies)
     {
         var parleyNodeFactory = host.Services.GetService<IParleyNodeFactory>();
         parleyNodeFactory?.Preload();

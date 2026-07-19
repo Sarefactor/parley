@@ -43,13 +43,33 @@ public class ExecutionNode : ParleyNode<ParleyLink>
                             ? "I want to book a holiday for august 20th for 4 weeks."
                             : parleyLink.LinkMessage;
 
+        JsonObject? extractedVariables = null;
+
+        if (WorkflowSchema.WorkflowVariables.Count > 0
+            && !string.IsNullOrWhiteSpace(parleyLink.LinkMessage))
+        {
+            extractedVariables = await ClassifyWorkflowVariables(inputMessage, context, cancellationToken);
+        }
+
+        await WorkflowStateManager.InitialiseWorkflowVariables(context,
+                                                               WorkflowSchema.GetAllWorkflowVariables(),
+                                                               extractedVariables,
+                                                               cancellationToken);
+
+        await context.SendMessageAsync(new ParleyLink(NodeConfig.PrimaryTransitionNode), cancellationToken);
+    }
+
+    private async Task<JsonObject> ClassifyWorkflowVariables(string inputMessage,
+                                                             IWorkflowContext context,
+                                                             CancellationToken cancellationToken)
+    {
         var classification = WorkflowClassifier.GetPromptAndSchema(new ClassificationOptions
-                                                                   {
-                                                                       ClassificationVariables = [],
-                                                                       IsWorkflowClassification = true,
-                                                                       Text = inputMessage
-                                                                   },
-                                                                   WorkflowSchema.WorkflowVariables);
+        {
+            ClassificationVariables = [],
+            IsWorkflowClassification = true,
+            Text = inputMessage
+        },
+        WorkflowSchema.WorkflowVariables);
 
         var messages = new List<ChatMessage>
         {
@@ -74,7 +94,7 @@ public class ExecutionNode : ParleyNode<ParleyLink>
                                                                extractedVariables,
                                                                cancellationToken);
 
-        await context.SendMessageAsync(new ParleyLink(NodeConfig.PrimaryTransitionNode), cancellationToken);
+        return extractedVariables;
     }
 }
 

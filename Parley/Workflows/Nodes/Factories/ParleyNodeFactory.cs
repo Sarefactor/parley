@@ -3,6 +3,7 @@ using Parley.Configuration.Attributes;
 using Parley.Core.DataAccess.Models.Nodes;
 using Parley.Core.DataAccess.Models.Schemas;
 using Parley.Workflows.Links;
+using System.Reflection;
 
 namespace Parley.Workflows.Nodes.Factories;
 
@@ -31,17 +32,19 @@ public class ParleyNodeFactory : IParleyNodeFactory
     public ParleyNodeOptionsValidator GetNodeValidator(string nodeType)
         => NodeOptionValidators.Single(x => x.Key == nodeType).Value;
 
-    public void Preload()
+    public void Preload(params Assembly[] assemblies)
     {
-        LoadNodes();
-        LoadNodeValidators();
+        LoadNodes(assemblies);
+        LoadNodeValidators(assemblies);
     }
 
-    private void LoadNodes()
+    private void LoadNodes(params Assembly[] assemblies)
     {
         var baseType = typeof(ParleyNode<ParleyLink>);
 
         var types = AppDomain.CurrentDomain.GetAssemblies()
+                                           .Concat(assemblies)
+                                           .Distinct()
                                            .SelectMany(a => a.GetTypes())
                                            .Where(t => !t.IsAbstract
                                                        && t.IsDefined(typeof(ParleyNodeAttribute), inherit: false)
@@ -51,11 +54,13 @@ public class ParleyNodeFactory : IParleyNodeFactory
             NodeFactories[type.Name] = ActivatorUtilities.CreateFactory(type, [typeof(ParleyNodeContext)]);
     }
 
-    private void LoadNodeValidators()
+    private void LoadNodeValidators(params Assembly[] assemblies)
     {
         var baseType = typeof(ParleyNodeOptionsValidator);
 
         var types = AppDomain.CurrentDomain.GetAssemblies()
+                                           .Concat(assemblies)
+                                           .Distinct()
                                            .SelectMany(a => a.GetTypes())
                                            .Where(t => !t.IsAbstract
                                                   && t.IsDefined(typeof(ParleyNodeValidatorAttribute), inherit: false)

@@ -1,19 +1,22 @@
-﻿using Microsoft.Agents.AI.Workflows;
+﻿using Microsoft.Agents.AI;
+using Microsoft.Agents.AI.Workflows;
 using Parley.Core.DataAccess.Models.Variables;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Parley.Workflows.State;
 
 public class WorkflowStateManager : IWorkflowStateManager
 {
     public const string WorkflowContextKey = "WorkflowVariables";
+    public const string IterationStoreKey = nameof(IterationStoreKey);
 
     public async Task InitialiseWorkflowVariables(IWorkflowContext context,
                                                   List<WorkflowVariable> workflowVariables,
-                                                  JsonObject extractedVariables,
+                                                  JsonObject? extractedVariables,
                                                   CancellationToken cancellationToken)
     {
-        var variablesToStore = workflowVariables.Select(wv => new WorkflowVariable(wv, extractedVariables.FirstOrDefault(ev => ev.Key == wv.Name).Value))
+        var variablesToStore = workflowVariables.Select(wv => new WorkflowVariable(wv, extractedVariables?.FirstOrDefault(ev => ev.Key == wv.Name).Value))
                                                 .ToList();
 
         await context.QueueStateUpdateAsync(WorkflowContextKey, variablesToStore, WorkflowContextKey, cancellationToken);
@@ -30,9 +33,12 @@ public class WorkflowStateManager : IWorkflowStateManager
                                                             string key,
                                                             CancellationToken cancellationToken)
     {
+        var keyToAccess = key.Contains(':') ? key.Split(':')[0]
+                                            : key;
+
         var workflowVariables = await context.ReadStateAsync<List<WorkflowVariable>>(WorkflowContextKey, WorkflowContextKey, cancellationToken);
 
-        var workflowVariable = workflowVariables?.FirstOrDefault(x => x.Name == key);
+        var workflowVariable = workflowVariables?.FirstOrDefault(x => x.Name == keyToAccess);
 
         if (workflowVariable == null)
             throw new KeyNotFoundException($"{nameof(WorkflowVariable)} not found in the workflow context.");
@@ -106,4 +112,96 @@ public class WorkflowStateManager : IWorkflowStateManager
 
         await context.QueueStateUpdateAsync(WorkflowContextKey, contextVariables, WorkflowContextKey, cancellationToken);
     }
+
+    public async Task<IterationContext> GetIterationContext(Guid iteratorKey, string targetKey, IWorkflowContext context, CancellationToken cancellationToken)
+    {
+        var iterationStore = await GetIterationStore(context, cancellationToken);
+
+        var existingContext = iterationStore.FirstOrDefault(x => x.Key == iteratorKey).Value;
+
+        if (existingContext != null)
+            return existingContext with { IsNew = false };
+
+        var iterationContext = new IterationContext(iteratorKey, targetKey);
+
+        iterationStore.Add(iteratorKey, iterationContext);
+
+        await context.QueueStateUpdateAsync(IterationStoreKey,
+                                            iterationStore,
+                                            IterationStoreKey,
+                                            cancellationToken);
+
+        var iterationStoreDebug = await GetIterationStore(context, cancellationToken);
+
+        return iterationContext;
+    }
+
+    public async Task<(IterationContext? primaryContext, IterationContext? secondaryContext)> GetWorkflowVariableContexts(string primaryKey,
+                                                                                                                          string? secondaryKey,
+                                                                                                                          IWorkflowContext context,
+                                                                                                                          CancellationToken cancellationToken)
+    {
+        var iterationStore = await GetIterationStore(context, cancellationToken);
+
+        return (iterationStore.FirstOrDefault(x => x.Value.TargetKey == primaryKey).Value,
+                secondaryKey != null ? iterationStore.FirstOrDefault(x => x.Value.TargetKey == secondaryKey).Value : null);
+    }
+
+    public async Task SetIterationContext(IterationContext iterationContext, IWorkflowContext workflowContext, CancellationToken cancellationToken)
+    {
+        var iterationStore = await GetIterationStore(workflowContext, cancellationToken);
+        iterationStore[iterationContext.IteratorId] = iterationContext;
+    }
+
+    public async Task ClearIterationContext(IterationContext iterationContext, IWorkflowContext workflowContext, CancellationToken cancellationToken)
+    {
+        var iterationStore = await GetIterationStore(workflowContext, cancellationToken);
+
+        if (iterationStore.ContainsKey(iterationContext.IteratorId))
+            iterationStore.Remove(iterationContext.IteratorId);
+    }
+
+    private async Task<Dictionary<Guid, IterationContext>> GetIterationStore(IWorkflowContext context, CancellationToken cancellationToken)
+    {
+        return await context.ReadOrInitStateAsync(IterationStoreKey,
+                                                  () => new Dictionary<Guid, IterationContext>(),
+                                                  IterationStoreKey,
+                                                  cancellationToken);
+    }
 }
+
+public sealed record IterationContext
+{
+    public IterationContext(Guid iteratorKey, string targetKey)
+    {
+        IteratorId = iteratorKey;
+        TargetKey = targetKey;
+        IsNew = true;
+    }
+
+    [JsonConstructor]
+    public IterationContext(Guid iteratorKey, string targetKey, int iterationCount)
+    {
+        IteratorId = iteratorKey;
+        TargetKey = targetKey;
+        IterationCount = iterationCount;
+    }
+
+    [JsonInclude]
+    [JsonPropertyName("iteratorId")]
+    public Guid IteratorId { get; private set; }
+
+    [JsonInclude]
+    [JsonPropertyName("targetKey")]
+    public string TargetKey { get; private set; }
+
+    [JsonInclude]
+    [JsonPropertyName("iterationCount")]
+    public int IterationCount { get; private set; }
+
+    [JsonIgnore]
+    public bool IsNew { get; set; }
+
+    public void Increment()
+        => IterationCount++;
+};

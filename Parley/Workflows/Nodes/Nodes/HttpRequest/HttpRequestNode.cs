@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Parley.Configuration.Attributes;
 using Parley.Workflows.Links;
-using Parley.Workflows.Nodes.Nodes.Bool;
-using Parley.Workflows.Nodes.Nodes.Classification;
 using Parley.Workflows.State;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -16,7 +14,7 @@ namespace Parley.Workflows.Nodes.Nodes.HttpRequest;
 [SendsMessage(typeof(ParleyLink))]
 public class HttpRequestNode : ParleyNode<ParleyLink>
 {
-    public const string HttpClientName = "ParleyHttpNode";
+    private const string HttpClientName = "ParleyHttpNode";
     private readonly IHttpClientFactory _httpClientFactory;
 
     public HttpRequestNode(ParleyNodeContext context,
@@ -38,15 +36,16 @@ public class HttpRequestNode : ParleyNode<ParleyLink>
             var response = await SendRequest(options, context, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
+            {
                 await context.SendMessageAsync(new ParleyLink((Guid)NodeConfig.SecondaryTransitionNode!), cancellationToken);
-            // Log non 200 response here?
+                return;
+            }
 
             await ProcessResponse(response, options, context, cancellationToken);
         }
         catch(Exception ex)
         {
             var exMessage = ex.Message;
-            // TODO: logging of error/exception here?
         }
 
         await context.SendMessageAsync(new ParleyLink(NodeConfig.PrimaryTransitionNode), cancellationToken);
@@ -75,7 +74,6 @@ public class HttpRequestNode : ParleyNode<ParleyLink>
                 await WorkflowStateManager.SetWorkflowVariable(context, workflowVariable, cancellationToken);
             }
         }
-
     }
 
     private async Task<HttpResponseMessage> SendRequest(HttpRequestNodeOptions options,
@@ -93,13 +91,16 @@ public class HttpRequestNode : ParleyNode<ParleyLink>
         return await client.SendAsync(request, cancellationToken);
     }
 
-    private async Task<Uri> BuildUri(HttpRequestNodeOptions options, IWorkflowContext context, CancellationToken cancellationToken)
+    private async Task<Uri> BuildUri(HttpRequestNodeOptions options,
+                                     IWorkflowContext context,
+                                     CancellationToken cancellationToken)
     {
         var queryParams = new Dictionary<string, string?>();
 
         foreach (var parameter in options.RequestParameters)
         {
             var variable = await WorkflowStateManager.GetWorkflowVariable(context, parameter.TargetKey, cancellationToken);
+
             if (variable.Value is not null)
                 queryParams[parameter.ParameterName] = variable.Value.ToString();
         }
@@ -126,7 +127,7 @@ public class HttpRequestNode : ParleyNode<ParleyLink>
 public class HttpRequestNodeOptions : ParleyNodeOptions
 {
     [JsonPropertyName("url")]
-    public string Url { get; set; } = default!;
+    public string Url { get; set; } = string.Empty;
 
     [JsonPropertyName("method")]
     public HttpMethodType MethodType { get; set; } = HttpMethodType.Get;
@@ -144,7 +145,7 @@ public class HttpRequestNodeOptions : ParleyNodeOptions
     public List<RequestParameters> RequestParameters { get; set; } = [];
 
     [JsonPropertyName("responseMappings")]
-    public List<ResponseMapping> ResponseMappings { get; set; } = new();
+    public List<ResponseMapping> ResponseMappings { get; set; } = [];
 
     public HttpMethod GetHttpMethod()
         => MethodType switch

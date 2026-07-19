@@ -42,6 +42,11 @@ public partial class ParleyVariable
     [JsonPropertyName("nullable")]
     [JsonInclude]
     public bool Nullable { get; protected set; }
+
+    public static string ParseKey(string variableKey)
+    {
+        return variableKey.Contains(':') ? variableKey.Split(':')[0] : variableKey;
+    }
 }
 
 public partial class ParleyVariable

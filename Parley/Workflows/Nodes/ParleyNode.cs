@@ -44,19 +44,77 @@ public abstract class ParleyNode<TInput> : Executor<TInput>
         return builder;
     }
 
-    protected string BuildMessage(ICollection<WorkflowVariable> variables, string baseMessage)
+    protected async Task<string> BuildMessage(IWorkflowContext context, ICollection<WorkflowVariable> variables, string baseMessage, CancellationToken cancellationToken)
     {
-        return Regex.Replace(baseMessage, @"\[([^\]]*)\]", match =>
+        var regex = new Regex(@"\[([^\]]*)\]");
+        var replacements = new Dictionary<string, string>();
+
+        foreach (Match match in regex.Matches(baseMessage))
         {
-            var variable = variables.FirstOrDefault(x => x.Name == match.Groups[1].Value);
-            return variable?.Value?.ToString() ?? match.Value;
-        });
+            if (replacements.ContainsKey(match.Value))
+                continue;
+
+            replacements[match.Value] = await ResolveVariableAsync(
+                context, variables, match, cancellationToken);
+        }
+
+        return replacements.Count() > 0 ? regex.Replace(baseMessage, match => replacements[match.Value])
+                                        : baseMessage;
+    }
+
+    private async Task<string> ResolveVariableAsync(IWorkflowContext context,
+                                                    ICollection<WorkflowVariable> variables,
+                                                    Match match,
+                                                    CancellationToken cancellationToken)
+    {
+        var variableKey = ParleyVariable.ParseKey(match.Groups[1].Value);
+        var variable = variables.FirstOrDefault(x => x.Name == variableKey);
+
+        if (variable == null)
+            return match.Value;
+
+        var variableContext = variable.BuildVariableContext(variableKey);
+
+        if (variableContext.HasList())
+        {
+            (var primaryContext, var secondaryContext) = await WorkflowStateManager.GetWorkflowVariableContexts(variableKey,
+                                                                                                                match.Groups[1].Value.Contains(':') ? match.Groups[1].Value
+                                                                                                                                                    : null,
+                                                                                                                context,
+                                                                                                                cancellationToken);
+
+            if (primaryContext != null)
+                variableContext.SetIterationContext(primaryContext, true);
+
+            if (secondaryContext != null)
+                variableContext.SetIterationContext(secondaryContext, false);
+        }
+
+        // TODO: Return variable value based on context
+
+        var testVariableValue = variable.GetVariableValueAsString(variableKey, variableContext);
+
+        return variable?.Value?.ToString() ?? match.Value;
     }
 
     protected async Task<string> BuildMessage(IWorkflowContext context, string baseMessage, CancellationToken cancellationToken)
     {
         var variables = await WorkflowStateManager.GetWorkflowVariablesFromContext(context, cancellationToken);
-        return BuildMessage(variables, baseMessage);
+        return await BuildMessage(context, variables, baseMessage, cancellationToken);
+    }
+
+    protected async Task SetWorkflowVariable(IWorkflowContext context,
+                                         string variableKey,
+                                         object value,
+                                         CancellationToken cancellationToken)
+    {
+        var workflowVariable = await WorkflowStateManager.GetWorkflowVariable(context,
+                                                                              variableKey,
+                                                                              cancellationToken);
+
+        workflowVariable.SetValue(value);
+
+        await WorkflowStateManager.SetWorkflowVariable(context, workflowVariable, cancellationToken);
     }
 }
 

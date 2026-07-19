@@ -1,6 +1,7 @@
 ﻿using Parley.Core.DataAccess.Models.Nodes;
 using Parley.Core.DataAccess.Models.Schemas;
 using Parley.Workflows.Links;
+using System.Reflection;
 
 namespace Parley.Workflows.Nodes.Factories;
 
@@ -10,5 +11,5 @@ public interface IParleyNodeFactory
 
     ParleyNodeOptionsValidator GetNodeValidator(string nodeType);
 
-    void Preload();
+    void Preload(params Assembly[] assemblies);
 }

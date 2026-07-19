@@ -17,6 +17,9 @@ internal sealed class InputNode : ParleyNode<ParleyLink>
 {
     private readonly IValidateInput _inputValidator;
 
+    private InputNodeOptions Config { get; set; } = new();
+    public override string DialogType => nameof(InputNode);
+
     public InputNode(ParleyNodeContext context,
                            IWorkflowStateManager workflowStateManager,
                            IValidateInput inputValidator)
@@ -26,9 +29,7 @@ internal sealed class InputNode : ParleyNode<ParleyLink>
         _inputValidator = inputValidator;
     }
 
-    private InputNodeOptions Config { get; set; } = new();
 
-    public override string DialogType => nameof(InputNode);
 
     public override async ValueTask HandleAsync(ParleyLink parleyLink, IWorkflowContext context, CancellationToken cancellationToken = default)
     {

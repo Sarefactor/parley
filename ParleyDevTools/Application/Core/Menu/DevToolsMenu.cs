@@ -73,9 +73,9 @@ internal class DevToolsMenu
         {
             Console.Write("Select an Option: ");
             int.TryParse(Console.ReadLine(), out userOption);
-
         } while (!_menuOptions.Select(mo => mo.Id).ToList().Contains(userOption));
 
+        Console.WriteLine();
         return userOption;
     }
 }

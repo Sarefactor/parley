@@ -7,7 +7,11 @@
     <UserSecretsId>6786bb1e-75ad-4291-a897-b9518481b0a9</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
+    <PropertyGroup>
+	    
+    </PropertyGroup>
+
+	<ItemGroup>
     <PackageReference Include="Microsoft.Agents.AI" Version="1.7.0" />
     <PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.7.0" />
     <PackageReference Include="Microsoft.Agents.AI.AGUI" Version="1.7.0-preview.260526.1" />

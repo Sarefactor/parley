@@ -1,5 +1,6 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Options;
 using Parley.Classification;
 using Parley.Configuration.Attributes;
 using Parley.Providers;
@@ -53,7 +54,7 @@ public class GenerationNode : ParleyNode<ParleyLink>
 
         var response = await chatClient.GetResponseAsync(messages, null, cancellationToken);
 
-        await WorkflowStateManager.SetWorkflowVariable(context, options.TargetKey, response.Text, cancellationToken);
+        await SetWorkflowVariable(context, options.TargetKey, response.Text, cancellationToken);
     }
 }
 
