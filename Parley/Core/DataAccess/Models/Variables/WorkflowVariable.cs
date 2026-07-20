@@ -32,7 +32,8 @@ public partial class WorkflowVariable : ParleyVariable
         Type = workflowVariable.Type;
         IsList = workflowVariable.IsList;
         Nullable = workflowVariable.Nullable;
-        Value = value;       
+        Value = value;
+        ObjectVariables = workflowVariable.ObjectVariables;
     }
 
     [JsonInclude]
@@ -49,23 +50,55 @@ public partial class WorkflowVariable : ParleyVariable
     public void SetObjectVariables(List<ParleyVariable> parleyVariables)
         => ObjectVariables = parleyVariables;
 
-    public int GetListCount(string targetKey)
+    public int GetListCountZeroIndex(string targetKey, VariableIterationContext? iterationContext = null)
     {
-        if (IsList == false
-            || Value == null
-            || Value is not JsonArray jsonArray)
-            return 0;
+        var isPrimaryVariable = IsPrimaryVariableKey(targetKey, out var objectVariableKey);
+        var primaryKey = ParseKey(targetKey);
 
-        return jsonArray.Count;
+        if (Value is JsonNode baseNode
+            && baseNode.GetPath() == $"$.{primaryKey}"
+            && TryGetNode(baseNode,
+                          true,
+                          out var targetNode,
+                          iterationContext?.PrimaryContext.IterationContext?.IterationCount,
+                          objectVariableKey,
+                          iterationContext?.SecondaryContext?.IterationContext?.IterationCount)
+            && targetNode is JsonArray targetArrayNode)
+        {
+            return targetArrayNode.Count - 1;
+        }
+
+        return -1;
     }
 
-    public string? GetVariableValueAsString(string variableKey, WorkflowVariableIterationContext iterationContext)
+    private bool IsPrimaryVariableKey(string targetKey, out string objectVariableKey)
     {
-        // TODO: Lots of mega super duper fun times to be had here.
-        return null;
+        var split = targetKey.Split(':', 2);
+        objectVariableKey = split.Length == 2 ? split[1] : string.Empty;
+        return split.Length == 1;
     }
 
-    public WorkflowVariableIterationContext BuildVariableContext(string targetKey)
+    public string? GetVariableValueAsString(string targetKey, VariableIterationContext iterationContext)
+    {
+        var isPrimaryVariable = IsPrimaryVariableKey(targetKey, out var objectVariableKey);
+        var primaryKey = ParseKey(targetKey);
+
+        if (Value is JsonNode baseNode
+            && baseNode.GetPath() == $"$.{primaryKey}"
+            && TryGetNode(baseNode,
+                          false,
+                          out var targetNode,
+                          iterationContext.PrimaryContext.IterationContext?.IterationCount,
+                          objectVariableKey,
+                          iterationContext.SecondaryContext?.IterationContext?.IterationCount))
+        {
+            return targetNode!.ToString();
+        }
+
+        return targetKey;
+    }
+
+    public VariableIterationContext BuildVariableContext(string targetKey)
     {
         var key = targetKey.Contains(':') ? targetKey.Split(':')[0]
                                           : targetKey;
@@ -76,7 +109,7 @@ public partial class WorkflowVariable : ParleyVariable
         bool? secondaryIsList = secondaryKey != null ? ObjectVariables.First(ov => ov.Name == targetKey.Split(':')[1]).IsList
                                                      : null;
 
-        return new WorkflowVariableIterationContext(key, IsList, secondaryKey, secondaryIsList);
+        return new VariableIterationContext(key, IsList, secondaryKey, secondaryIsList);
 
         // TODECIDE: Throw error if key/s does not match variable name?
     }
@@ -88,11 +121,61 @@ public partial class WorkflowVariable : ParleyVariable
 
         return (variableKey.Split(':')[0], variableKey);
     }
+
+    
+
+    static bool TryGetNode(JsonNode root,
+                           bool isTargetNodeAnArray,
+                           out JsonNode? result,
+                           params object?[] path)
+    {
+        result = null;
+        JsonNode? currentNode = root;
+
+        path = path.Where(part => part is not null
+                                  && (part is not string text || !string.IsNullOrWhiteSpace(text)))
+                    .ToArray();
+
+        for (var i = 0; i < path.Length; i++)
+        {
+            var segment = path[i];
+
+            switch (segment)
+            {
+                case string stringProperty when currentNode is JsonObject objT:
+
+                    if (!objT.TryGetPropertyValue(stringProperty, out currentNode))
+                        return false;
+                    break;
+
+                case int indexProperty when currentNode is JsonArray array:
+
+                    if (isTargetNodeAnArray
+                        && i == path.Length - 1)
+                    {
+                        result = array;
+                        return true;
+                    }
+
+                    if (indexProperty < 0 || indexProperty >= array.Count)
+                        return false;
+
+                    currentNode = array[indexProperty];
+                    break;
+
+                default:
+                    return false;
+            }
+        }
+
+        result = currentNode;
+        return true;
+    }
 }
 
-public class WorkflowVariableIterationContext
+public class VariableIterationContext
 {
-    public WorkflowVariableIterationContext(string primaryKey,
+    public VariableIterationContext(string primaryKey,
                                    bool primaryIsList,
                                    string? secondaryKey = null,
                                    bool? secondaryIsList = null)

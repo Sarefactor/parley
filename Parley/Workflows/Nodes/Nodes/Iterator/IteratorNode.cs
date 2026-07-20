@@ -34,7 +34,10 @@ internal sealed class IteratorNode : ParleyNode<ParleyLink>
 
         var workflowVariable = await WorkflowStateManager.GetWorkflowVariable(context, Config.TargetKey, cancellationToken);
 
-        if (iteratorContext.IterationCount >= workflowVariable.GetListCount(Config.TargetKey))
+        var variableIterationContext = workflowVariable.BuildVariableContext(Config.TargetKey);
+        await SetVariableIterationContext(variableIterationContext, context, cancellationToken);
+
+        if (iteratorContext.IterationCount >= workflowVariable.GetListCountZeroIndex(Config.TargetKey, variableIterationContext))
         {
             await WorkflowStateManager.ClearIterationContext(iteratorContext, context, cancellationToken);
             await context.SendMessageAsync(new ParleyLink((Guid)NodeConfig.SecondaryTransitionNode!), cancellationToken);

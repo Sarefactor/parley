@@ -55,7 +55,7 @@ public abstract class ParleyNode<TInput> : Executor<TInput>
                 continue;
 
             replacements[match.Value] = await ResolveVariableAsync(
-                context, variables, match, cancellationToken);
+                context, variables, match.Groups[1].Value, cancellationToken);
         }
 
         return replacements.Count() > 0 ? regex.Replace(baseMessage, match => replacements[match.Value])
@@ -64,37 +64,40 @@ public abstract class ParleyNode<TInput> : Executor<TInput>
 
     private async Task<string> ResolveVariableAsync(IWorkflowContext context,
                                                     ICollection<WorkflowVariable> variables,
-                                                    Match match,
+                                                    string targetKey,
                                                     CancellationToken cancellationToken)
     {
-        var variableKey = ParleyVariable.ParseKey(match.Groups[1].Value);
+        var variableKey = ParleyVariable.ParseKey(targetKey);
         var variable = variables.FirstOrDefault(x => x.Name == variableKey);
 
         if (variable == null)
-            return match.Value;
+            return targetKey;
 
-        var variableContext = variable.BuildVariableContext(variableKey);
+        var variableContext = variable.BuildVariableContext(targetKey);
+        await SetVariableIterationContext(variableContext, context, cancellationToken);
 
-        if (variableContext.HasList())
-        {
-            (var primaryContext, var secondaryContext) = await WorkflowStateManager.GetWorkflowVariableContexts(variableKey,
-                                                                                                                match.Groups[1].Value.Contains(':') ? match.Groups[1].Value
-                                                                                                                                                    : null,
-                                                                                                                context,
-                                                                                                                cancellationToken);
+        return variable.GetVariableValueAsString(targetKey, variableContext) ?? targetKey;
+    }
 
-            if (primaryContext != null)
-                variableContext.SetIterationContext(primaryContext, true);
+    protected async Task SetVariableIterationContext(VariableIterationContext variableIterationContext,
+                                                     IWorkflowContext workflowContext,
+                                                     CancellationToken cancellationToken)
+    {
+        if (!variableIterationContext.HasList())
+            return;
 
-            if (secondaryContext != null)
-                variableContext.SetIterationContext(secondaryContext, false);
-        }
+        (var primaryContext, var secondaryContext) = await WorkflowStateManager.GetWorkflowVariableContexts(variableIterationContext.PrimaryContext.Key,
+                                                                                                            variableIterationContext.SecondaryContext?.Key,
+                                                                                                            workflowContext,
+                                                                                                            cancellationToken);
 
-        // TODO: Return variable value based on context
+        if (primaryContext != null)
+            variableIterationContext.SetIterationContext(primaryContext, true);
 
-        var testVariableValue = variable.GetVariableValueAsString(variableKey, variableContext);
+        if (secondaryContext != null)
+            variableIterationContext.SetIterationContext(secondaryContext, false);
 
-        return variable?.Value?.ToString() ?? match.Value;
+        return;
     }
 
     protected async Task<string> BuildMessage(IWorkflowContext context, string baseMessage, CancellationToken cancellationToken)
