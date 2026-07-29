@@ -39,26 +39,29 @@ public class AgentSchemaDtoMapper : ISchemaDtoMapper
             Intent = schema.Intent,
             Description = schema.Description,
             ExecutionNodeId = schema.ExecutionNodeId,
-            Nodes = schema.Nodes.Values.Select(NodeConfigDto).ToList(),
-            WorkflowVariables = schema.WorkflowVariables.Select(MapWorkflowVariableDto).ToList()
+            Nodes = schema.Nodes.Values.Select(NodeConfigDto)
+                                       .ToList(),
+            WorkflowVariables = schema.WorkflowVariables.Select(MapWorkflowVariableDto)
+                                                        .ToList()
         };
     }
 
     private static NodeConfigDto NodeConfigDto(NodeConfig node)
+        => new()
     {
-        return new NodeConfigDto
-        {
-            NodeId = node.NodeId,
-            NodeType = node.NodeType,
-            PrimaryTransitionNode = node.PrimaryTransitionNode,
-            SecondaryTransitionNode = node.SecondaryTransitionNode,
-            NodeOptions = node.Options,
-            NodeVariables = node.NodeVariables.Select(MapWorkflowVariableDto).ToList(),
-            Transitions = node.Transitions.Select(MapTransitionDto).ToList(),
-            ValidationRules = node.ValidationRules.Select(MapValidationRuleDto).ToList(),
-            Position = MapNodePositionDto(node.NodePosition)
-        };
-    }
+        NodeId = node.NodeId,
+        NodeType = node.NodeType,
+        PrimaryTransitionNode = node.PrimaryTransitionNode,
+        SecondaryTransitionNode = node.SecondaryTransitionNode,
+        NodeOptions = node.Options,
+        NodeVariables = node.NodeVariables.Select(MapWorkflowVariableDto)
+                                          .ToList(),
+        Transitions = node.Transitions.Select(MapTransitionDto)
+                                      .ToList(),
+        ValidationRules = node.ValidationRules.Select(MapValidationRuleDto)
+                                              .ToList(),
+        Position = MapNodePositionDto(node.NodePosition)
+    };
 
     private static WorkflowVariableDto MapWorkflowVariableDto(WorkflowVariable variable)
     {
@@ -69,7 +72,8 @@ public class AgentSchemaDtoMapper : ISchemaDtoMapper
             Type = variable.Type,
             IsList = variable.IsList,
             IsNullable = variable.Nullable,
-            ObjectVariables = variable.ObjectVariables.Select(MapParleyVariableDto).ToList()
+            ObjectVariables = variable.ObjectVariables.Select(MapParleyVariableDto)
+                                                      .ToList()
         };
     }
 

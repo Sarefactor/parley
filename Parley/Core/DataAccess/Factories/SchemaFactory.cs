@@ -1,10 +1,10 @@
 ﻿using Parley.Configuration.Exceptions;
-using Parley.Core.DataAccess.Enums;
 using Parley.Core.DataAccess.Models.Nodes;
 using Parley.Core.DataAccess.Models.Schemas;
 using Parley.Core.DataAccess.Models.Validation;
 using Parley.Core.DataAccess.Models.Variables;
 using Parley.Core.DataAccess.Repositories;
+using Parley.Core.Enums;
 using Parley.Dtos.Schema;
 using Parley.Mappers.Extensions;
 using Parley.Validation;
@@ -31,9 +31,12 @@ public class SchemaFactory : ISchemaFactory
     {
         var context = new ParleyValidationContext();
 
-        var agentSchema = CreateAgentSchema(agentSchemaDto, context);
+        var agentSchema = CreateAgentSchema(agentSchemaDto,
+                                            context);
 
-        var workflows = BuildWorkflowSchemas(agentSchemaDto.WorkflowSchemas, context);
+        var workflows = BuildWorkflowSchemas(agentSchemaDto.WorkflowSchemas,
+                                             context);
+
         agentSchema.SetWorkflowSchemas(workflows);
 
         if (context.HasErrors)
@@ -48,7 +51,8 @@ public class SchemaFactory : ISchemaFactory
     {
         var context = new ParleyValidationContext();
 
-        var workflowSchema = BuildWorkflowSchema(workflowSchemaDto, context);
+        var workflowSchema = BuildWorkflowSchema(workflowSchemaDto,
+                                                 context);
 
         if (context.HasErrors)
         {
@@ -58,7 +62,8 @@ public class SchemaFactory : ISchemaFactory
         _workflowSchemaRepository.Upsert(workflowSchema);
     }
 
-    private AgentSchema CreateAgentSchema(AgentSchemaDto agentSchemaDto, ParleyValidationContext context)
+    private AgentSchema CreateAgentSchema(AgentSchemaDto agentSchemaDto,
+                                          ParleyValidationContext context)
     {
         AgentSchemaValidator.CollectValidationErrors(agentSchemaDto, context);
 
@@ -70,7 +75,8 @@ public class SchemaFactory : ISchemaFactory
     private List<WorkflowSchema> BuildWorkflowSchemas(List<WorkflowSchemaDto> workflowSchemaDtos,
                                                       ParleyValidationContext context)
     {
-        return workflowSchemaDtos.Select(x => BuildWorkflowSchema(x, context)).ToList();
+        return workflowSchemaDtos.Select(x => BuildWorkflowSchema(x, context))
+                                 .ToList();
     }
 
     private WorkflowSchema BuildWorkflowSchema(WorkflowSchemaDto dto,
@@ -157,16 +163,21 @@ public class SchemaFactory : ISchemaFactory
 
             nodeConfig.SetNodeVariables(nodeVariables);
 
-            var transitions = BuildTransitions(schemaDto, x.NodeId, x.Transitions, context);
+            var transitions = BuildTransitions(schemaDto,
+                                               x.NodeId,
+                                               x.Transitions,
+                                               context);
+
             nodeConfig.SetTransitions(transitions);
 
             var nodePosition = new NodePosition(x.Position.X, x.Position.Y);
+
             nodeConfig.SetNodePosition(nodePosition);
 
             var variables = schemaDto.Nodes.SelectMany(x => x.NodeVariables)
-                               .Concat(schemaDto.WorkflowVariables)
-                               .ToList()
-                               .AsReadOnly();
+                                           .Concat(schemaDto.WorkflowVariables)
+                                           .ToList()
+                                           .AsReadOnly();
 
             var validationRules = BuildValidationRules(x.ValidationRules);
             nodeConfig.SetValidationRules(validationRules);

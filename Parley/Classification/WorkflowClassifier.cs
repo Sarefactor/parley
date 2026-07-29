@@ -1,5 +1,5 @@
-﻿using Parley.Core.DataAccess.Enums;
-using Parley.Core.DataAccess.Models.Variables;
+﻿using Parley.Core.DataAccess.Models.Variables;
+using Parley.Core.Enums;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -10,9 +10,12 @@ public class WorkflowClassifier : IWorkflowClassifier
 {
     public ClassificationContext GetPromptAndSchema(ClassificationOptions options,
                                                     List<WorkflowVariable> classificationVariables)
-        => new(GetPrompt(options, classificationVariables), "workflowVariables", BuildExtractionJsonSchema(classificationVariables));
+        => new(GetPrompt(options, classificationVariables),
+               "workflowVariables",
+               BuildExtractionJsonSchema(classificationVariables));
 
-    private string GetPrompt(ClassificationOptions options, List<WorkflowVariable> classificationVariables)
+    private string GetPrompt(ClassificationOptions options,
+                             List<WorkflowVariable> classificationVariables)
     {
         var stringBuilder = new StringBuilder();
 
@@ -45,7 +48,8 @@ public class WorkflowClassifier : IWorkflowClassifier
         return stringBuilder.ToString();
     }
 
-    private void VariableInstructions(StringBuilder stringBuilder, ParleyVariable variable)
+    private void VariableInstructions(StringBuilder stringBuilder,
+                                      ParleyVariable variable)
     {
         stringBuilder.AppendLine($"Name: {variable.Name}");
         stringBuilder.AppendLine($"Description: {variable.Description}");
@@ -57,7 +61,8 @@ public class WorkflowClassifier : IWorkflowClassifier
         stringBuilder.AppendLine($"Nullable: {variable.Nullable.ToString()}");
     }
 
-    private void ObjectVariableInstructions(StringBuilder stringBuilder, WorkflowVariable variable)
+    private void ObjectVariableInstructions(StringBuilder stringBuilder,
+                                            WorkflowVariable variable)
     {
         stringBuilder.AppendLine($"Name: {variable.Name}");
         stringBuilder.AppendLine($"Description: {variable.Description}");

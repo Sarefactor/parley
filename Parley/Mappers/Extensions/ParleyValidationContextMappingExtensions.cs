@@ -9,8 +9,10 @@ public static class ParleyValidationContextMappingExtensions
     {
         return new ParleyValidationContextDto
         {
-            AgentErrorMessages = context.AgentErrorMessages.Select(x => x).ToList(),
-            WorkflowErrors = context.WorkflowErrors.Select(x => MapWorkflowValidationDto(x)).ToList()
+            AgentErrorMessages = context.AgentErrorMessages.Select(x => x)
+                                                           .ToList(),
+            WorkflowErrors = context.WorkflowErrors.Select(MapWorkflowValidationDto)
+                                                   .ToList()
         };
     }
 
@@ -19,8 +21,10 @@ public static class ParleyValidationContextMappingExtensions
         return new ParleyWorkflowValidationErrorDto
         {
             WorkflowId = workflowError.WorkflowId,
-            ErrorDetails = workflowError.ErrorDetails.Select(x => MapWorkflowErrorDetailDto(x)).ToList(),
-            NodeErrors = workflowError.NodeErrors.Select(x => MapNodeValidationDto(x)).ToList()
+            ErrorDetails = workflowError.ErrorDetails.Select(x => MapWorkflowErrorDetailDto(x))
+                                                     .ToList(),
+            NodeErrors = workflowError.NodeErrors.Select(x => MapNodeValidationDto(x))
+                                                 .ToList()
         };
     }
 
@@ -38,7 +42,8 @@ public static class ParleyValidationContextMappingExtensions
         return new ParleyNodeValidationErrorDto
         {
             NodeId = nodeError.NodeId,
-            ErrorDetails = nodeError.ErrorDetails.Select(MapNodeErrorDetailDto).ToList()
+            ErrorDetails = nodeError.ErrorDetails.Select(MapNodeErrorDetailDto)
+                                                 .ToList()
         };
     }
 

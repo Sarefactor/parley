@@ -1,4 +1,5 @@
 ﻿using Parley.Core.DataAccess.Models.Validation.RuleEvaluators;
+using Parley.Core.Enums;
 using Parley.Dtos.Schema;
 using Parley.Validation;
 using System.Text.Json;
@@ -54,7 +55,7 @@ public abstract class ParleyNodeOptionsValidator
         {
             switch (targetVariable.Type)
             {
-                case Core.DataAccess.Enums.VariableDataType.String:
+                case VariableDataType.String:
                     StringValidationRuleEvaluator.Validate(workflowId,
                                                            nodeConfigDto.NodeId,
                                                            targetVariable.Name,
@@ -62,7 +63,7 @@ public abstract class ParleyNodeOptionsValidator
                                                            context);
                     break;
 
-                case Core.DataAccess.Enums.VariableDataType.Integer:
+                case VariableDataType.Integer:
                     StringValidationRuleEvaluator.Validate(workflowId,
                                                            nodeConfigDto.NodeId,
                                                            targetVariable.Name,
@@ -70,7 +71,7 @@ public abstract class ParleyNodeOptionsValidator
                                                            context);
                     break;
 
-                case Core.DataAccess.Enums.VariableDataType.DateTime:
+                case VariableDataType.DateTime:
                     StringValidationRuleEvaluator.Validate(workflowId,
                                                            nodeConfigDto.NodeId,
                                                            targetVariable.Name,
@@ -78,7 +79,7 @@ public abstract class ParleyNodeOptionsValidator
                                                            context);
                     break;
 
-                case Core.DataAccess.Enums.VariableDataType.Bool:
+                case VariableDataType.Bool:
                     StringValidationRuleEvaluator.Validate(workflowId,
                                                            nodeConfigDto.NodeId,
                                                            targetVariable.Name,

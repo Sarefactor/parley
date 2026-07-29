@@ -8,6 +8,5 @@ public class ParleyLink
     }
 
     public Guid TransitionNode { get; set; }
-
     public string? LinkMessage { get; set; } = string.Empty;    
 }

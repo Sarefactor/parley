@@ -11,7 +11,9 @@ namespace Parley.Configuration;
 
 public sealed class ParleyNodeOptionsSerialiser : SerializerBase<JsonElement>
 {
-    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, JsonElement value)
+    public override void Serialize(BsonSerializationContext context,
+                                   BsonSerializationArgs args,
+                                   JsonElement value)
     {
         if (value is JsonElement element
             && element.ValueKind == JsonValueKind.Object)
@@ -25,7 +27,8 @@ public sealed class ParleyNodeOptionsSerialiser : SerializerBase<JsonElement>
         }
     }
 
-    public override JsonElement Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    public override JsonElement Deserialize(BsonDeserializationContext context,
+                                            BsonDeserializationArgs args)
     {
         var doc = BsonDocumentSerializer.Instance.Deserialize(context);
 

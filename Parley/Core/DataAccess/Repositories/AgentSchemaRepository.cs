@@ -15,7 +15,8 @@ public class AgentSchemaRepository : IAgentSchemaRepository
         _config = config.CurrentValue;
     }
 
-    public async Task<SearchResult<AgentSchema>> GetRange(int skip, int take)
+    public async Task<SearchResult<AgentSchema>> GetRange(int skip,
+                                                          int take)
     {
         EnsureCollectionExists();
 

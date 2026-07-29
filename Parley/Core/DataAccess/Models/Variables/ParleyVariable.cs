@@ -1,9 +1,9 @@
-﻿using Parley.Core.DataAccess.Enums;
+﻿using Parley.Core.Enums;
 using System.Text.Json.Serialization;
 
 namespace Parley.Core.DataAccess.Models.Variables;
 
-public partial class ParleyVariable
+public class ParleyVariable
 {
     [JsonConstructor]
     public ParleyVariable() { }
@@ -14,8 +14,6 @@ public partial class ParleyVariable
                           bool isList,
                           bool isNullable)
     {
-        Validate(name, description);
-
         Name = name;
         Description = description;
         Type = type;
@@ -23,41 +21,28 @@ public partial class ParleyVariable
         Nullable = isNullable;
     }
 
-    [JsonPropertyName("name")]
     [JsonInclude]
+    [JsonPropertyName("name")]
     public string Name { get; protected set; } = default!;
 
-    [JsonPropertyName("description")]
     [JsonInclude]
+    [JsonPropertyName("description")]
     public string Description { get; protected set; } = default!;
 
-    [JsonPropertyName("type")]
     [JsonInclude]
+    [JsonPropertyName("type")]
     public VariableDataType Type { get; protected set; }
 
-    [JsonPropertyName("isList")]
     [JsonInclude]
+    [JsonPropertyName("isList")]
     public bool IsList { get; protected set; }
 
-    [JsonPropertyName("nullable")]
     [JsonInclude]
+    [JsonPropertyName("nullable")]
     public bool Nullable { get; protected set; }
 
     public static string ParseKey(string variableKey)
     {
         return variableKey.Contains(':') ? variableKey.Split(':')[0] : variableKey;
-    }
-}
-
-public partial class ParleyVariable
-{
-    protected virtual void Validate(string name,
-                      string description)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new Exception($"Invalid value for {nameof(WorkflowVariable)} property {nameof(name)}.");
-
-        if (string.IsNullOrWhiteSpace(description))
-            throw new Exception($"Invalid value for {nameof(WorkflowVariable)} property {nameof(description)}.");
     }
 }

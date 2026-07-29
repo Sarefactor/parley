@@ -14,7 +14,8 @@ public class SessionProvider : ISessionProvider
     {
         ChatClientAgentRunOptions options = (ChatClientAgentRunOptions)agentRunOptions;
 
-        var threadIdExists = options.ChatOptions!.AdditionalProperties!.TryGetValue<string>("ag_ui_thread_id", out var threadId);
+        var threadIdExists = options.ChatOptions!.AdditionalProperties!.TryGetValue<string>("ag_ui_thread_id",
+                                                                                            out var threadId);
 
         if (!threadIdExists)
             throw new ValidationException("No thread Id found");

@@ -1,4 +1,4 @@
-﻿namespace Parley.Core.DataAccess.Enums;
+﻿namespace Parley.Core.Enums;
 
 public enum BoolComparisonType
 {

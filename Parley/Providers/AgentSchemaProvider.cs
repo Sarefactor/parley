@@ -21,7 +21,9 @@ internal class AgentSchemaProvider : IAgentSchemaProvider
 
     public async Task<AgentSchema> Provide()
     {
-        return (await _memoryCache.GetOrCreateAsync($"{nameof(AgentSchemaProvider)}:{nameof(AgentSchema)}", async entry => await GetAgentSchema(), GetMemoryCacheOptions()))!;
+        return (await _memoryCache.GetOrCreateAsync($"{nameof(AgentSchemaProvider)}:{nameof(AgentSchema)}",
+                                                    async entry => await GetAgentSchema(),
+                                                    GetMemoryCacheOptions()))!;
     }
 
     private async Task<AgentSchema> GetAgentSchema()
@@ -41,7 +43,9 @@ internal class AgentSchemaProvider : IAgentSchemaProvider
 
     private async Task<AgentConfiguration> GetAgentConfiguration()
     {
-        return (await _memoryCache.GetOrCreateAsync($"{nameof(AgentSchemaProvider)}:{nameof(AgentConfiguration)}", async entry => await GetAgentConfigurationFromDb(), GetMemoryCacheOptions()))!;
+        return (await _memoryCache.GetOrCreateAsync($"{nameof(AgentSchemaProvider)}:{nameof(AgentConfiguration)}",
+                                                    async entry => await GetAgentConfigurationFromDb(),
+                                                    GetMemoryCacheOptions()))!;
     }
 
     private async Task<AgentConfiguration> GetAgentConfigurationFromDb()
@@ -69,6 +73,8 @@ internal class AgentSchemaProvider : IAgentSchemaProvider
             return;
 
         await _agentConfigurationRepository.UpdateActiveConversationId(agentSchemaId);
-        _memoryCache.Set($"{nameof(AgentSchemaProvider)}:{nameof(AgentSchema)}", agentSchema, GetMemoryCacheOptions());
+        _memoryCache.Set($"{nameof(AgentSchemaProvider)}:{nameof(AgentSchema)}",
+                         agentSchema,
+                         GetMemoryCacheOptions());
     }
 }

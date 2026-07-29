@@ -1,4 +1,4 @@
-﻿using Parley.Core.DataAccess.Enums;
+﻿using Parley.Core.Enums;
 using Parley.Dtos.Schema;
 using Parley.Validation;
 using Parley.Validation.Enums;

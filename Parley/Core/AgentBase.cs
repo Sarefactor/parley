@@ -9,7 +9,8 @@ internal class AgentBase : DelegatingAIAgent
 {
     private readonly ISessionProvider _sessionProvider;
 
-    public AgentBase(AIAgent innerAgent, ISessionProvider sessionProvider)
+    public AgentBase(AIAgent innerAgent,
+                     ISessionProvider sessionProvider)
         : base(innerAgent)
     {
         _sessionProvider = sessionProvider;
@@ -20,9 +21,14 @@ internal class AgentBase : DelegatingAIAgent
                                                                                          AgentRunOptions? options = null,
                                                                                          [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var storedSession = await _sessionProvider.GetAgentSessionAsync(this, options ?? new AgentRunOptions(), cancellationToken);
+        var storedSession = await _sessionProvider.GetAgentSessionAsync(this,
+                                                                        options ?? new AgentRunOptions(),
+                                                                        cancellationToken);
 
-        await foreach (var update in base.RunCoreStreamingAsync(messages, storedSession, options, cancellationToken)
+        await foreach (var update in base.RunCoreStreamingAsync(messages,
+                                                                storedSession,
+                                                                options,
+                                                                cancellationToken)
                                          .WithCancellation(cancellationToken))
         {
             yield return update;

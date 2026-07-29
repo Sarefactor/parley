@@ -27,9 +27,11 @@ public class AgentSchemaRegistry : IAgentSchemaRegistry
         return _agentSchemaDtoMapper.Map(agentSchema);
     }
 
-    public async Task<SearchResultDto<SchemaSearchItemDto>> Search(int skip, int take)
+    public async Task<SearchResultDto<SchemaSearchItemDto>> Search(int skip,
+                                                                   int take)
     {
-        var result = await _agentSchemaRepository.GetRange(skip, take);
+        var result = await _agentSchemaRepository.GetRange(skip,
+                                                           take);
 
         return new SearchResultDto<SchemaSearchItemDto>
         {

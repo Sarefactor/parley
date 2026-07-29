@@ -7,9 +7,12 @@ using ParleyDevTools.Application.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).AddUserSecrets<Program>().Build();
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true)
+                                              .AddUserSecrets<Program>()
+                                              .Build();
 
-RegisterServices(builder.Services, configuration);
+RegisterServices(builder.Services,
+                 configuration);
 
 var host = builder.Build();
 
@@ -20,9 +23,11 @@ var application = host.Services.GetService<DevToolsMenu>();
 if (application != null)
     await application.Start();
 
-static void RegisterServices(IServiceCollection services, IConfiguration configuration)
+static void RegisterServices(IServiceCollection services,
+                             IConfiguration configuration)
 {
-    ParleyConfiguration.ConfigureParley(services, configuration, true);
+    ParleyConfiguration.ConfigureParley(services,
+                                        configuration, true);
 
     services.AddScoped<IWorkflowService, WorkflowService>()
             .AddScoped<DevToolsMenu>();

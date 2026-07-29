@@ -19,7 +19,6 @@ public class WorkflowSchema
         ExecutionNodeId = executionNodeId;
     }
 
-
     [JsonInclude]
     [JsonPropertyName("name")]
     [BsonElement("name")]

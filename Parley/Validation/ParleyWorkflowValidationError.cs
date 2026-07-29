@@ -5,10 +5,8 @@ namespace Parley.Validation;
 public class ParleyWorkflowValidationError
 {
     public Guid WorkflowId { get; private set; }
-
     private List<ParleyWorkflowValidationErrorDetail> _errorDetails = [];
     public IReadOnlyList<ParleyWorkflowValidationErrorDetail> ErrorDetails => _errorDetails;
-
     private List<ParleyNodeValidationError> _nodeErrors = [];
     public IReadOnlyList<ParleyNodeValidationError> NodeErrors => _nodeErrors;
 

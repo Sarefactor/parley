@@ -30,12 +30,14 @@ public static class ParleyConfiguration
         return services;
     }
 
-    private static void ConfigureOptions(IServiceCollection services, IConfiguration configuration)
+    private static void ConfigureOptions(IServiceCollection services,
+                                         IConfiguration configuration)
     {
         services.Configure<ParleyConfig>(configuration.GetSection(ParleyConfig.AppsettingsKey));
     }
 
-    private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+    private static void ConfigureServices(IServiceCollection services,
+                                          IConfiguration configuration)
     {
         services.AddHttpClient().AddLogging();
         services.AddAGUI();
@@ -57,12 +59,15 @@ public static class ParleyConfiguration
         services.AddMemoryCache();
     }
 
-    private static void ConfigureState(IServiceCollection services, IConfiguration configuration)
+    private static void ConfigureState(IServiceCollection services,
+                                       IConfiguration configuration)
     {
         services.AddSingleton<IWorkflowStateManager, WorkflowStateManager>();
     }
 
-    private static void ConfigureDatabases(IServiceCollection services, IConfiguration configuration, bool useDefaultMongoDb)
+    private static void ConfigureDatabases(IServiceCollection services,
+                                           IConfiguration configuration,
+                                           bool useDefaultMongoDb)
     {
         if (useDefaultMongoDb)
         { 
@@ -73,13 +78,15 @@ public static class ParleyConfiguration
         }
     }
 
-    public static async Task PreloadNodes(WebApplication app, params Assembly[] assemblies)
+    public static async Task PreloadNodes(WebApplication app,
+                                          params Assembly[] assemblies)
     {
         var parleyNodeFactory = app.Services.GetService<IParleyNodeFactory>();
         parleyNodeFactory?.Preload();
     }
 
-    public static async Task PreloadNodes(IHost host, params Assembly[] assemblies)
+    public static async Task PreloadNodes(IHost host,
+                                          params Assembly[] assemblies)
     {
         var parleyNodeFactory = host.Services.GetService<IParleyNodeFactory>();
         parleyNodeFactory?.Preload();

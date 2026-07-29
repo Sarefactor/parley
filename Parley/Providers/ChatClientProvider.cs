@@ -25,5 +25,6 @@ internal class ChatClientProvider : IChatClientProvider
     }
 
     private IChatClient CreateOpenAiChatClient()
-        => new OpenAIClient(_config.ProviderConfig.ApiKey).GetChatClient(_config.ProviderConfig.Model).AsIChatClient();
+        => new OpenAIClient(_config.ProviderConfig.ApiKey).GetChatClient(_config.ProviderConfig.Model)
+                                                          .AsIChatClient();
 }

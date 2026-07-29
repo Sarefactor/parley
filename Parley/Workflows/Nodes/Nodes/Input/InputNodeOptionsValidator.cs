@@ -1,4 +1,5 @@
 ﻿using Parley.Configuration.Attributes;
+using Parley.Core.Enums;
 using Parley.Dtos.Schema;
 using Parley.Validation;
 using Parley.Validation.Enums;
@@ -51,7 +52,7 @@ public class InputNodeOptionsValidator : ParleyNodeOptionsValidator
         }
 
         if (targetVariable != null
-            && (targetVariable.Type == Core.DataAccess.Enums.VariableDataType.Object
+            && (targetVariable.Type == VariableDataType.Object
                 || targetVariable.IsList))
         {
             context.AddNodeError(workflowId,

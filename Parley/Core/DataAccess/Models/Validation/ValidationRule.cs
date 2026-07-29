@@ -1,4 +1,4 @@
-﻿using Parley.Core.DataAccess.Enums;
+﻿using Parley.Core.Enums;
 using System.Text.Json.Serialization;
 
 namespace Parley.Core.DataAccess.Models.Validation;

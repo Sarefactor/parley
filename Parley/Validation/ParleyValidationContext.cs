@@ -6,12 +6,10 @@ public class ParleyValidationContext
 {
     private List<string> _agentErrorMessages = [];
     public IReadOnlyList<string> AgentErrorMessages => _agentErrorMessages;
-
     private List<ParleyWorkflowValidationError> _workflowErrors = [];
     public IReadOnlyList<ParleyWorkflowValidationError> WorkflowErrors => _workflowErrors;
 
     public bool HasErrors => _agentErrorMessages.Count > 0 || _workflowErrors.Any(x => x.HasErrors);
-
     public bool HasCriticalError { get; private set; } = false;
 
     public void AddAgentError(string message)

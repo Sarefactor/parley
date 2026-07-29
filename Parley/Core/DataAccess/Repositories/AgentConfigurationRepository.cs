@@ -19,7 +19,9 @@ public class AgentConfigurationRepository : IAgentConfigurationRepository
     {
         EnsureCollectionExists();
 
-        var filter = Builders<AgentConfiguration>.Filter.Eq(static x => x.ConfigurationId, AgentConfiguration.DefaultConfigurationId);
+        var filter = Builders<AgentConfiguration>.Filter.Eq(static x => x.ConfigurationId,
+                                                                        AgentConfiguration.DefaultConfigurationId);
+
         return (await _collection!.FindAsync(filter)).SingleOrDefault();
     }
 
@@ -27,7 +29,8 @@ public class AgentConfigurationRepository : IAgentConfigurationRepository
     {
         EnsureCollectionExists();
 
-        var filter = Builders<AgentConfiguration>.Filter.Eq(static x => x.ConfigurationId, AgentConfiguration.DefaultConfigurationId);
+        var filter = Builders<AgentConfiguration>.Filter.Eq(static x => x.ConfigurationId,
+                                                                        AgentConfiguration.DefaultConfigurationId);
 
         var configuration = (await _collection!.FindAsync(filter)).SingleOrDefault();
 

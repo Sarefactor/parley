@@ -5,7 +5,11 @@ namespace Parley.Workflows.Validation;
 
 public interface IValidateInput
 {
-    bool Validate(WorkflowVariable workflowVariable, string input, List<ValidationRule> validationRules);
+    bool Validate(WorkflowVariable workflowVariable,
+                  string input,
+                  List<ValidationRule> validationRules);
 
-    Guid EvaluateTransition(Guid defaultTransitionNode, List<Transition> transitions, ICollection<WorkflowVariable> workflowVariables);
+    Guid EvaluateTransition(Guid defaultTransitionNode,
+                            List<Transition> transitions,
+                            ICollection<WorkflowVariable> workflowVariables);
 }

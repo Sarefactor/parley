@@ -1,4 +1,4 @@
-﻿using Parley.Core.DataAccess.Enums;
+﻿using Parley.Core.Enums;
 
 namespace Parley.Workflows.Validation;
 
