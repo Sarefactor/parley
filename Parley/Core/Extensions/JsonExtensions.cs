@@ -16,6 +16,15 @@ public static class JsonExtensions
                                   && (part is not string text || !string.IsNullOrWhiteSpace(text)))
                    .ToArray();
 
+        if (path.Length == 0
+            && currentNode is JsonObject jsonObject
+            && jsonObject.Count == 1
+            && jsonObject[0] is JsonNode)
+        {
+            result = jsonObject[0];
+            return true;
+        }
+
         for (var i = 0; i < path.Length; i++)
         {
             var segment = path[i];

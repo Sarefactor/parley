@@ -1,5 +1,6 @@
 ﻿using Parley.Core.Enums;
 using Parley.Core.Extensions;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -44,7 +45,28 @@ public class WorkflowVariable : ParleyVariable
     public object? Value { get; private set; } = new();
 
     public void SetValue(object value)
-        => Value = value;
+    {
+        if (IsList)
+            return;
+
+        var isValid = (Type, value) switch
+        {
+            (VariableDataType.String, string) => true,
+            (VariableDataType.Integer, int) => true,
+            (VariableDataType.Bool, string) => true,
+            (VariableDataType.DateTime, DateTime) => true,
+            _ => false
+        };
+
+        if (!isValid)
+            return;
+
+        Value = new JsonObject
+        {
+            [Name] = JsonSerializer.SerializeToNode(value, value.GetType())
+        };
+    }
+
 
     public void SetObjectVariables(List<ParleyVariable> parleyVariables)
         => ObjectVariables = parleyVariables;
@@ -77,14 +99,15 @@ public class WorkflowVariable : ParleyVariable
         var primaryKey = ParseKey(targetKey);
 
         if (Value is JsonNode baseNode
-            && baseNode.GetPath() == $"$.{primaryKey}"
             && baseNode.TryGetNode(false,
                                    out var targetNode,
                                    iterationContext.PrimaryContext.IterationContext?.IterationCount,
                                    objectVariableKey,
-                                   iterationContext.SecondaryContext?.IterationContext?.IterationCount))
+                                   iterationContext.SecondaryContext?.IterationContext?.IterationCount)
+            && targetNode is JsonValue jsonValue
+            && jsonValue.TryGetValue<string>(out var stringValue))
         {
-            return targetNode!.ToString();
+            return stringValue;
         }
 
         return targetKey;

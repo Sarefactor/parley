@@ -45,4 +45,9 @@ public class ParleyVariable
     {
         return variableKey.Contains(':') ? variableKey.Split(':')[0] : variableKey;
     }
+    
+    public static string ParseNodeKey(string variableKey)
+    {
+        return variableKey.Contains(':') ? variableKey.Split(':')[1] : variableKey;
+    }
 }
