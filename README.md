@@ -13,7 +13,7 @@
   <a href="http://parley-maf.dev"><strong>Documentation</strong></a> ·
   <a href="http://parley-maf.dev/documentation/v0/introduction"><strong>Getting Started</strong></a> ·
   <a href="https://github.com/Sarefactor/parley-waterworks"><strong>Project Template</strong></a> ·
-  <a href="https://github.com/Sarefactor/parley-fe"><strong>Front-End Project</strong></a> ·
+  <a href="https://github.com/Sarefactor/parley-fe"><strong>Front-End Project</strong></a>
 </p>
 
 ## Table of Contents
