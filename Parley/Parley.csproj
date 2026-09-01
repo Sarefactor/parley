@@ -1,17 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+<PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>6786bb1e-75ad-4291-a897-b9518481b0a9</UserSecretsId>
-  </PropertyGroup>
 
-    <PropertyGroup>
-	    
-    </PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>Parley</PackageId>
+    <Authors>Sarah Barrett</Authors>
+    <Description>A package for building Agent Framework workflows.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Sarefactor/parley</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+</PropertyGroup>
 
-	<ItemGroup>
+<ItemGroup>
+	<None Include="../README.md" Pack="true" PackagePath="\" />
+</ItemGroup>
+	
+<ItemGroup>
     <PackageReference Include="Microsoft.Agents.AI" Version="1.7.0" />
     <PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.7.0" />
     <PackageReference Include="Microsoft.Agents.AI.AGUI" Version="1.7.0-preview.260526.1" />
@@ -26,6 +37,6 @@
     <PackageReference Include="MongoDB.Bson" Version="3.9.0" />
     <PackageReference Include="MongoDB.Driver" Version="3.9.0" />
     <PackageReference Include="TypeGen" Version="7.0.0" />
-  </ItemGroup>
+</ItemGroup>
 
 </Project>
