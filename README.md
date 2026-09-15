@@ -2,6 +2,7 @@
 
 [![Website](https://img.shields.io/badge/Website-parleymaf.dev-orange)](https://parley-maf.dev)
 [![License](https://img.shields.io/badge/License-MIT-orange)](LICENSE)
+[![NuGet](https://img.shields.io/nuget/v/Parley)](https://www.nuget.org/packages/Parley/)
 
 <p align="center">
   <a href="https://parley-maf.dev">
