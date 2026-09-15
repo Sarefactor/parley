@@ -5,7 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>6786bb1e-75ad-4291-a897-b9518481b0a9</UserSecretsId>
-
     <IsPackable>true</IsPackable>
     <PackageId>Parley</PackageId>
     <Authors>Sarah Barrett</Authors>
@@ -13,13 +12,14 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Sarefactor/parley</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReadmeFile>README-NUGET.md</PackageReadmeFile>
+    <PackageReadmeFile>../README-NUGET.md</PackageReadmeFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 </PropertyGroup>
 
 <ItemGroup>
 	<None Include="../README.md" Pack="true" PackagePath="\" />
+	<None Include="../README-NUGET.md" Pack="true" PackagePath="" />
 </ItemGroup>
 	
 <ItemGroup>
