@@ -1,11 +1,13 @@
 ﻿using Parley.Core.DataAccess.Models.Validation;
 using Parley.Core.DataAccess.Models.Variables;
 using Parley.Core.Enums;
+using Parley.Workflows.Nodes.Nodes.Transition;
 
 namespace Parley.Workflows.Validation;
 
 public class InputValidator : IValidateInput
 {
+
     public bool Validate(WorkflowVariable workflowVariable,
                          string input,
                          List<ValidationRule> validationRules)
@@ -30,34 +32,31 @@ public class InputValidator : IValidateInput
         }).All(result => result);
     }
 
-    public Guid EvaluateTransition(Guid defaultTransitionNode,
-                                   List<Transition> transitions,
-                                   ICollection<WorkflowVariable> workflowVariables)
+    public async Task<Guid> EvaluateTransition(Guid defaultTransitionNode,
+                                               List<Transition> transitions,
+                                               List<TransitionContext> transitionContexts)
     {
         foreach (var transition in transitions.OrderBy(t => t.Priority))
         {
             var isMatch = transition.TransitionRules.Select(tr =>
             {
-                var variable = workflowVariables.FirstOrDefault(dv => dv.Name == tr.TargetKey);
+                var transitionContext = transitionContexts.Single(x => x.Variable.Name == tr.TargetKey);
 
-                if (variable == null)
-                    return false;
-
-                return variable.Type switch
+                return transitionContext.Variable.Type switch
                 {
                     VariableDataType.String => StringValidator.EvaluateTransition(tr,
-                                                                                  variable),
+                                                                                  transitionContext),
                     VariableDataType.Integer => IntegerValidator.EvaluateTransition(tr,
-                                                                                    variable),
+                                                                                    transitionContext),
                     VariableDataType.Bool => BoolValidator.EvaluateTransition(tr,
-                                                                              variable),
+                                                                              transitionContext),
                     VariableDataType.DateTime => DateTimeValidator.EvaluateTransition(tr,
-                                                                                      variable),
-                    _ => throw new NotSupportedException($"Transition evaluation not supported for {nameof(VariableDataType)}: {variable.Type}")
+                                                                                      transitionContext),
+                    _ => throw new NotSupportedException($"Transition evaluation not supported for {nameof(VariableDataType)}: {transitionContext.Variable.Type}")
                 };
-            }).All(result => result);
+            });
 
-            if (isMatch)
+            if (isMatch.All(isMatch => isMatch))
                 return transition.TargetNodeId;
         }
 

@@ -1,6 +1,7 @@
 ﻿using Parley.Core.DataAccess.Models.Validation;
-using Parley.Core.DataAccess.Models.Variables;
+
 using Parley.Core.Enums;
+using Parley.Workflows.Nodes.Nodes.Transition;
 
 namespace Parley.Workflows.Validation;
 
@@ -11,20 +12,26 @@ public static class BoolValidator
     {
         return bool.TryParse(input,
                              out var value)
-               && Evaluate(value,
-                           rule);
+               && Evaluate(rule,
+                           value);
     }
  
     public static bool EvaluateTransition(TransitionRule rule,
-                                          WorkflowVariable variable)
+                                          TransitionContext context)
     {
-        return variable is { Type: VariableDataType.Bool, Value: bool value }
-               && Evaluate(value,
-                           rule);
+        if (context.Variable is not { Type: VariableDataType.Bool })
+            return false;
+
+        var value = context.Variable.GetVariableValueAsBool(rule.TargetKey, context.Context);
+
+        if (value == null)
+            return false;
+
+        return Evaluate(rule, (bool)value);
     }
 
-    private static bool Evaluate(bool value,
-                                 ValidationRule rule)
+    private static bool Evaluate(ValidationRule rule,
+                                 bool value)
     {
         return rule.MatchBool is { } match
                && rule.BoolComparisonType switch

@@ -1,6 +1,6 @@
 ﻿using Parley.Core.DataAccess.Models.Validation;
-using Parley.Core.DataAccess.Models.Variables;
 using Parley.Core.Enums;
+using Parley.Workflows.Nodes.Nodes.Transition;
 using System.Globalization;
 
 namespace Parley.Workflows.Validation;
@@ -18,9 +18,16 @@ public static class DateTimeValidator
                                            rule.NumberComparisonType);
 
     public static bool EvaluateTransition(TransitionRule rule,
-                                          WorkflowVariable variable)
-        => variable is { Type: VariableDataType.DateTime, Value: DateTime value }
-           && ComparisonEvaluator.Evaluate(value,
-                                           rule.MatchDateTime,
-                                           rule.NumberComparisonType);
+                                          TransitionContext context)
+    {
+        if (context.Variable is not { Type: VariableDataType.DateTime })
+            return false;
+
+        var value = context.Variable.GetVariableValueAsComparable<DateTime>(rule.TargetKey, context.Context);
+
+        if (value == null)
+            return false;
+
+        return ComparisonEvaluator.Evaluate((DateTime)value, rule.MatchDateTime, rule.NumberComparisonType);
+    }
 }

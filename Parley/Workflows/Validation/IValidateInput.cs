@@ -1,5 +1,7 @@
-﻿using Parley.Core.DataAccess.Models.Validation;
+﻿using Microsoft.Agents.AI.Workflows;
+using Parley.Core.DataAccess.Models.Validation;
 using Parley.Core.DataAccess.Models.Variables;
+using Parley.Workflows.Nodes.Nodes.Transition;
 
 namespace Parley.Workflows.Validation;
 
@@ -9,7 +11,7 @@ public interface IValidateInput
                   string input,
                   List<ValidationRule> validationRules);
 
-    Guid EvaluateTransition(Guid defaultTransitionNode,
-                            List<Transition> transitions,
-                            ICollection<WorkflowVariable> workflowVariables);
+    Task<Guid> EvaluateTransition(Guid defaultTransitionNode,
+                                  List<Transition> transitions,
+                                  List<TransitionContext> transitionContexts);
 }

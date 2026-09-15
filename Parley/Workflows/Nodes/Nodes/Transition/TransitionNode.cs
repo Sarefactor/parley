@@ -1,9 +1,11 @@
-﻿using Microsoft.Agents.AI.Workflows;
+﻿using Microsoft.Agents.AI;
+using Microsoft.Agents.AI.Workflows;
 using Parley.Configuration.Attributes;
 using Parley.Workflows.Links;
 using Parley.Workflows.State;
 using Parley.Workflows.Validation;
 using TypeGen.Core.TypeAnnotations;
+
 namespace Parley.Workflows.Nodes.Nodes.Transition;
 
 [ParleyNode]
@@ -26,11 +28,28 @@ public class TransitionNode : ParleyNode<ParleyLink>
                                                 IWorkflowContext context,
                                                 CancellationToken cancellationToken = default)
     {
-        var transitionNode = _inputValidator.EvaluateTransition(NodeConfig.PrimaryTransitionNode,
-                                                                NodeConfig.Transitions,
-                                                                await WorkflowStateManager.GetWorkflowVariablesFromContext(context, cancellationToken));
+        var transitionNode = await _inputValidator.EvaluateTransition(NodeConfig.PrimaryTransitionNode,
+                                                                      NodeConfig.Transitions,
+                                                                      await GetTransitionContextsAsync(context, cancellationToken));
 
         await context.SendMessageAsync(new ParleyLink(transitionNode), cancellationToken);
+    }
+
+    public async Task<List<TransitionContext>> GetTransitionContextsAsync(IWorkflowContext context,
+                                                                          CancellationToken cancellationToken)
+    {
+        var workflowVariables = await WorkflowStateManager.GetWorkflowVariablesFromContext(context, cancellationToken);
+
+        return (await Task.WhenAll(NodeConfig.Transitions.SelectMany(x => x.TransitionRules)
+                                                             .Select(async tr =>
+        {
+            var variable = workflowVariables.Single(x => x.Name == tr.TargetKey);
+
+            var variableIterationContext = variable.BuildVariableContext(tr.TargetKey);
+            await SetVariableIterationContext(variableIterationContext, context, cancellationToken);
+
+            return new TransitionContext(variable, variableIterationContext);
+        }))).ToList();            
     }
 
     public override WorkflowBuilder Configure(WorkflowBuilder builder,

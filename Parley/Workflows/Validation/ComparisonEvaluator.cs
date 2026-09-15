@@ -1,4 +1,5 @@
 ﻿using Parley.Core.Enums;
+using Parley.Workflows.Nodes.Nodes.Transition;
 
 namespace Parley.Workflows.Validation;
 

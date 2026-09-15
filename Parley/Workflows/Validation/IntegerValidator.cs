@@ -1,6 +1,6 @@
 ﻿using Parley.Core.DataAccess.Models.Validation;
-using Parley.Core.DataAccess.Models.Variables;
 using Parley.Core.Enums;
+using Parley.Workflows.Nodes.Nodes.Transition;
 using System.Globalization;
 
 namespace Parley.Workflows.Validation;
@@ -18,9 +18,18 @@ public static class IntegerValidator
                                            rule.NumberComparisonType);
 
     public static bool EvaluateTransition(TransitionRule rule,
-                                          WorkflowVariable variable)
-        => variable is { Type: VariableDataType.Integer, Value: int value }
-           && ComparisonEvaluator.Evaluate(value,
-                                           rule.MatchInt,
-                                           rule.NumberComparisonType);
+                                          TransitionContext context)
+    {
+        if (context.Variable is not { Type: VariableDataType.Integer })
+            return false;
+
+        var value = context.Variable.GetVariableValueAsComparable<int>(rule.TargetKey, context.Context);
+
+        if (value == null)
+            return false;
+
+        return ComparisonEvaluator.Evaluate((int)value, rule.MatchInt, rule.NumberComparisonType);
+
+
+    }
 }

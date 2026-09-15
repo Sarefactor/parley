@@ -27,6 +27,10 @@ public interface IWorkflowStateManager
                               JsonObject extractedVariables,
                               CancellationToken cancellationToken);
 
+    Task<IterationContext> GetIterationContext(string targetKey,
+                                               IWorkflowContext context,
+                                               CancellationToken cancellationToken);
+
     Task<IterationContext> GetIterationContext(Guid iteratorKey,
                                                string targetKey,
                                                IWorkflowContext context,

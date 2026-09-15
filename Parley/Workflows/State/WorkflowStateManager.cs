@@ -133,6 +133,15 @@ public class WorkflowStateManager : IWorkflowStateManager
                                             cancellationToken);
     }
 
+    public async Task<IterationContext?> GetIterationContext(string targetKey,
+                                                             IWorkflowContext context,
+                                                             CancellationToken cancellationToken)
+    {
+        var iterationStore = await GetIterationStore(context, cancellationToken);
+
+        return iterationStore.Values.SingleOrDefault(x => x.TargetKey == targetKey);
+    }
+
     public async Task<IterationContext> GetIterationContext(Guid iteratorKey,
                                                             string targetKey,
                                                             IWorkflowContext context,

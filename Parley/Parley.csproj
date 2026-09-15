@@ -9,11 +9,11 @@
     <IsPackable>true</IsPackable>
     <PackageId>Parley</PackageId>
     <Authors>Sarah Barrett</Authors>
-    <Description>A package for building Agent Framework workflows.</Description>
+    <Description>A dotnet package for building Agent Framework workflows.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Sarefactor/parley</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>README-NUGET.md</PackageReadmeFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 </PropertyGroup>

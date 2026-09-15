@@ -56,6 +56,20 @@ public class GenerationNode : ParleyNode<ParleyLink>
 
         await SetWorkflowVariable(context, options.TargetKey, response.Text, cancellationToken);
     }
+
+    public override WorkflowBuilder Configure(WorkflowBuilder builder,
+                                              Dictionary<Guid, ParleyNode<ParleyLink>> nodes)
+    {
+        builder.AddEdge<ParleyLink>(this,
+                                    nodes.Single(x => x.Key == NodeConfig.PrimaryTransitionNode).Value,
+                                    link => link?.TransitionNode == NodeConfig.PrimaryTransitionNode);
+
+        builder.AddEdge<ParleyLink>(this,
+                                    nodes.Single(x => x.Key == NodeConfig.SecondaryTransitionNode).Value,
+                                    link => link?.TransitionNode == NodeConfig.SecondaryTransitionNode);
+
+        return builder;
+    }
 }
 
 [ExportTsClass]

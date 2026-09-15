@@ -1,5 +1,6 @@
 ﻿using Parley.Core.Enums;
 using Parley.Core.Extensions;
+using Parley.Workflows.State;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -111,6 +112,48 @@ public class WorkflowVariable : ParleyVariable
         }
 
         return targetKey;
+    }
+
+    public T? GetVariableValueAsComparable<T>(string targetKey,
+                                              VariableIterationContext iterationContext) where T : struct, IComparable<T>
+    {
+        var isPrimaryVariable = IsPrimaryVariableKey(targetKey, out var objectVariableKey);
+        var primaryKey = ParseKey(targetKey);
+
+        if (Value is JsonNode baseNode
+            && baseNode.TryGetNode(false,
+                                   out var targetNode,
+                                   iterationContext.PrimaryContext.IterationContext?.IterationCount,
+                                   objectVariableKey,
+                                   iterationContext.SecondaryContext?.IterationContext?.IterationCount)
+            && targetNode is JsonValue jsonValue
+            && jsonValue.TryGetValue<T>(out var value))
+        {
+            return value;
+        }
+
+        return null;
+    }
+
+    public bool? GetVariableValueAsBool(string targetKey,
+                                        VariableIterationContext iterationContext)
+    {
+        var isPrimaryVariable = IsPrimaryVariableKey(targetKey, out var objectVariableKey);
+        var primaryKey = ParseKey(targetKey);
+
+        if (Value is JsonNode baseNode
+            && baseNode.TryGetNode(false,
+                                   out var targetNode,
+                                   iterationContext.PrimaryContext.IterationContext?.IterationCount,
+                                   objectVariableKey,
+                                   iterationContext.SecondaryContext?.IterationContext?.IterationCount)
+            && targetNode is JsonValue jsonValue
+            && jsonValue.TryGetValue<bool>(out var value))
+        {
+            return value;
+        }
+
+        return null;
     }
 
     public VariableIterationContext BuildVariableContext(string targetKey)
